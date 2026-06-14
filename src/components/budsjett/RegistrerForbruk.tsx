@@ -148,7 +148,8 @@ export default function RegistrerForbruk({
       kilde: "kvittering",
     }));
 
-    const { error } = await supabase.from("transaksjoner").insert(inserts);
+    const { data: lagretData, error } = await supabase.from("transaksjoner").insert(inserts).select();
+    console.log("Insert transaksjoner:", { lagretData, error });
     setLagrer(false);
     if (error) {
       setFeil("Kunne ikke lagre: " + error.message);
