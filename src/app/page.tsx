@@ -39,7 +39,7 @@ export default function Home() {
           className="text-2xl font-bold mb-4 leading-snug max-w-xs"
           style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}
         >
-          Familieøkonomi gjort enkelt
+          Familieøkonomi<br />gjort enkelt
         </h2>
         <p
           className="text-base leading-relaxed mb-10 max-w-xs"
