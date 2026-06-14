@@ -124,16 +124,6 @@ function LoginForm() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-          {isSignUp ? "Har du allerede konto?" : "Ny bruker?"}{" "}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="font-semibold underline underline-offset-2"
-            style={{ color: "var(--accent)" }}
-          >
-            {isSignUp ? "Logg inn" : "Opprett konto"}
-          </button>
-        </p>
       </div>
     </div>
   );
