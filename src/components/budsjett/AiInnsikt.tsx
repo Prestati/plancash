@@ -112,6 +112,7 @@ export default function AiInnsikt({
         <span className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "var(--font-lora)" }}>
           Innsikt for {MÅNEDER[maned - 1].toLowerCase()}
         </span>
+
       </div>
       <div className="space-y-3">
         {innsikter.map((ins, i) => (

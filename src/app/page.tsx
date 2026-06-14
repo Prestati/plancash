@@ -53,7 +53,7 @@ export default function Home() {
           {[
             { ikon: "📊", tekst: "Budsjett & årsplan" },
             { ikon: "🧾", tekst: "Logg kvitteringer" },
-            { ikon: "✨", tekst: "AI-innsikt" },
+            { ikon: "✨", tekst: "Innsikt" },
             { ikon: "👨‍👩‍👧", tekst: "Del med familien" },
           ].map(({ ikon, tekst }) => (
             <div
