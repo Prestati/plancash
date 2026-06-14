@@ -32,7 +32,7 @@ export default async function ForbrukDetaljPage({
       .eq("user_id", dataUserId)
       .eq("kategori", kategoriId)
       .gte("dato", `${år}-${manadStr}-01`)
-      .lte("dato", `${år}-${manadStr}-31`)
+      .lt("dato", manadNr === 12 ? `${år + 1}-01-01` : `${år}-${String(manadNr + 1).padStart(2, "0")}-01`)
       .order("dato", { ascending: false }),
   ]);
 

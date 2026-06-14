@@ -89,9 +89,10 @@ export default function MånedsOversikt({
   async function oppdaterTransaksjoner() {
     const supabase = createClient();
     const manadStr = String(maned).padStart(2, "0");
+    const nesteManed = maned === 12 ? `${år + 1}-01-01` : `${år}-${String(maned + 1).padStart(2, "0")}-01`;
     const { data } = await supabase
       .from("transaksjoner").select("*").eq("user_id", userId)
-      .gte("dato", `${år}-${manadStr}-01`).lte("dato", `${år}-${manadStr}-31`)
+      .gte("dato", `${år}-${manadStr}-01`).lt("dato", nesteManed)
       .order("dato", { ascending: false });
     if (data) setTransaksjoner(data as Transaksjon[]);
   }
