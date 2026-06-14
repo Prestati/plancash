@@ -36,45 +36,44 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "var(--background)" }}>
+    <div className="min-h-screen flex flex-col px-5 pt-16 pb-10" style={{ background: "var(--background)" }}>
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 mb-8">
-        <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
-          style={{ background: "var(--accent)" }}
-        >
-          ₪
-        </div>
-        <span className="text-xl font-bold" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
-          Plancash
-        </span>
-      </Link>
+      <div className="flex justify-center mb-10">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div
+            className="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-bold text-lg"
+            style={{ background: "var(--accent)" }}
+          >
+            ₪
+          </div>
+          <span className="text-2xl font-bold" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
+            Plancash
+          </span>
+        </Link>
+      </div>
 
-      <div
-        className="w-full max-w-sm rounded-2xl p-8 shadow-sm"
-        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-      >
-        <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
+      <div className="flex-1 flex flex-col max-w-sm mx-auto w-full">
+        <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
           {isSignUp ? "Opprett konto" : "Logg inn"}
         </h1>
-        <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
+        <p className="text-base mb-8" style={{ color: "var(--text-muted)" }}>
           {isSignUp ? "Bli med i Plan-familien" : "Velkommen tilbake"}
         </p>
 
         {message && (
-          <div className="mb-4 p-3 rounded-xl text-sm" style={{ background: "var(--green-light)", color: "var(--green)" }}>
+          <div className="mb-4 p-4 rounded-2xl text-sm" style={{ background: "var(--green-light)", color: "var(--green)" }}>
             {message}
           </div>
         )}
         {error && (
-          <div className="mb-4 p-3 rounded-xl text-sm" style={{ background: "var(--red-light)", color: "var(--red)" }}>
+          <div className="mb-4 p-4 rounded-2xl text-sm" style={{ background: "var(--red-light)", color: "var(--red)" }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
               E-post
             </label>
             <input
@@ -83,9 +82,9 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="deg@eksempel.no"
-              className="w-full px-4 py-2.5 rounded-xl text-sm outline-none transition-all"
+              className="w-full px-4 py-4 rounded-2xl text-base outline-none transition-all"
               style={{
-                background: "var(--background)",
+                background: "var(--surface)",
                 border: "1.5px solid var(--border)",
                 color: "var(--text-primary)",
               }}
@@ -95,7 +94,7 @@ function LoginForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: "var(--text-secondary)" }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
               Passord
             </label>
             <input
@@ -104,9 +103,9 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full px-4 py-2.5 rounded-xl text-sm outline-none transition-all"
+              className="w-full px-4 py-4 rounded-2xl text-base outline-none transition-all"
               style={{
-                background: "var(--background)",
+                background: "var(--surface)",
                 border: "1.5px solid var(--border)",
                 color: "var(--text-primary)",
               }}
@@ -118,14 +117,14 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-opacity disabled:opacity-50"
+            className="w-full py-4 rounded-2xl font-semibold text-base text-white transition-opacity disabled:opacity-50 active:opacity-80"
             style={{ background: "var(--accent)" }}
           >
             {loading ? "Laster..." : isSignUp ? "Opprett konto" : "Logg inn"}
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+        <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
           {isSignUp ? "Har du allerede konto?" : "Ny bruker?"}{" "}
           <button
             onClick={() => setIsSignUp(!isSignUp)}

@@ -3,78 +3,93 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-6"
+      className="min-h-screen flex flex-col"
       style={{ background: "var(--background)" }}
     >
-      {/* Logo */}
-      <div className="flex items-center gap-3 mb-10">
-        <div
-          className="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl font-bold"
-          style={{ background: "var(--accent)" }}
-        >
-          ₪
+      {/* Hero */}
+      <div
+        className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-10 text-center"
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-8">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-sm"
+            style={{ background: "var(--accent)" }}
+          >
+            ₪
+          </div>
+          <h1
+            className="text-4xl font-bold"
+            style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}
+          >
+            Plancash
+          </h1>
         </div>
-        <h1 className="text-4xl font-bold" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
-          Plancash
-        </h1>
-      </div>
 
-      {/* Kommer snart */}
-      <div className="text-center max-w-md">
+        {/* Badge */}
         <div
           className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6"
           style={{ background: "var(--accent-light)", color: "var(--accent)" }}
         >
           Kommer snart
         </div>
+
+        {/* Tagline */}
         <h2
-          className="text-3xl font-bold mb-4 leading-snug"
+          className="text-2xl font-bold mb-4 leading-snug max-w-xs"
           style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}
         >
           Familieøkonomi gjort enkelt
         </h2>
-        <p className="text-base leading-relaxed mb-10" style={{ color: "var(--text-secondary)" }}>
-          Én oversikt over budsjett, utgifter og sparing — for hele familien.
-          Del med partneren, logg kvitteringer og få smarte innsikter.
+        <p
+          className="text-base leading-relaxed mb-10 max-w-xs"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Budsjett, utgifter og sparing — én oversikt for hele familien.
         </p>
 
-        {/* Funksjoner */}
-        <div className="grid grid-cols-2 gap-3 mb-10 text-left">
+        {/* Feature-kort */}
+        <div className="grid grid-cols-2 gap-3 w-full max-w-sm mb-10 text-left">
           {[
             { ikon: "📊", tekst: "Budsjett & årsplan" },
-            { ikon: "🧾", tekst: "Scan kvitteringer" },
+            { ikon: "🧾", tekst: "Logg kvitteringer" },
             { ikon: "✨", tekst: "AI-innsikt" },
             { ikon: "👨‍👩‍👧", tekst: "Del med familien" },
           ].map(({ ikon, tekst }) => (
             <div
               key={tekst}
-              className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+              className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl text-sm font-medium"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                color: "var(--text-secondary)",
+              }}
             >
-              <span>{ikon}</span>
+              <span className="text-lg">{ikon}</span>
               <span>{tekst}</span>
             </div>
           ))}
         </div>
 
-        <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>
-          Allerede bruker?
-        </p>
+        {/* CTA */}
         <Link
           href="/auth/login"
-          className="inline-block px-8 py-3 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90"
+          className="w-full max-w-sm flex items-center justify-center py-4 rounded-2xl font-semibold text-white text-base transition-opacity active:opacity-80"
           style={{ background: "var(--accent)" }}
         >
           Logg inn →
         </Link>
       </div>
 
-      <p className="mt-16 text-xs" style={{ color: "var(--text-muted)" }}>
-        En del av{" "}
-        <a href="https://www.plandish.no" className="underline underline-offset-2">
-          Plan-familien
-        </a>
-      </p>
+      {/* Footer */}
+      <div className="py-6 text-center">
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+          En del av{" "}
+          <a href="https://www.plandish.no" className="underline underline-offset-2">
+            Plan-familien
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
