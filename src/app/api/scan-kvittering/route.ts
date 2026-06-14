@@ -25,25 +25,31 @@ export async function POST(req: NextRequest) {
             type: "text",
             text: `Les av denne kvitteringen og returner KUN et JSON-objekt (ingen forklaring, bare JSON).
 
-Grupper varene i meningsfulle kategorier basert på hva de er. Typiske kategorier:
-- Dagligvarer (mat, melk, brød, grønnsaker, kjøtt, etc.)
-- Godterier (sjokolade, drops, is, snacks, brus)
-- Alkohol (øl, vin, brennevin)
-- Tobakk/Snus
-- Hygiene/Vaskemidler (sjampo, såpe, vaskemiddel, tannbørste)
-- Husholdning (tørkepapir, batterier, lyspærer)
-- Annet (det som ikke passer andre steder)
+VIKTIGE REGLER:
+1. PANT på kvitteringen hører alltid til varen rett over. Legg pant-beløpet til i samme kategori som den tilhørende varen — ikke lag en egen PANT-kategori.
+2. Alkohol: Carlsberg, Hansa, Ringnes, Tuborg, Heineken, Smirnoff, Absolut, øl, vin, brennevin, cider = Alkohol-kategorien. Ikke bland disse med Dagligvarer.
+3. ZEROH, Coca-Cola, Pepsi, Fanta, Solo, brus, juice, iskaffe = Brus/Godterier, ikke alkohol.
+4. Plastpose, bærepose = Husholdning.
 
-Returner bare kategorier som faktisk finnes på kvitteringen. Slå gjerne sammen veldig små kategorier med Dagligvarer hvis de er under 20 kr.
+Grupper varene slik:
+- Dagligvarer (mat, melk, brød, egg, grønnsaker, kjøtt, meieri, yoghurt, etc.)
+- Godterier & Snacks (sjokolade, drops, is, potetgull, brus, juice, energidrikk)
+- Alkohol (øl, vin, brennevin, cider — se regel 2)
+- Tobakk/Snus
+- Hygiene/Vaskemidler (sjampo, såpe, vaskemiddel)
+- Husholdning (plastpose, tørkepapir, batterier)
+- Annet
+
+Returner bare kategorier som faktisk finnes. Slå sammen kategorier under 30 kr med nærmeste.
 
 {
-  "dato": "<dato i format YYYY-MM-DD, eller null hvis ikke synlig>",
-  "butikk": "<navn på butikk/sted, eller null>",
+  "dato": "<dato i format YYYY-MM-DD, eller null>",
+  "butikk": "<navn på butikk, eller null>",
   "totalBeløp": <totalt beløp som tall>,
   "grupper": [
     {
       "kategoriNavn": "<kategorinavn på norsk>",
-      "beløp": <beløp som tall>,
+      "beløp": <beløp inkl. pant for denne kategorien, som tall>,
       "varer": ["<varenavn>", "<varenavn>"]
     }
   ]
