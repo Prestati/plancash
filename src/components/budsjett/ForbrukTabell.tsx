@@ -7,7 +7,7 @@ const MND_KORT = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep",
 
 interface Transaksjon {
   id: string;
-  kategori_id: string | null;
+  kategori: string | null;
   dato: string;
   beløp: number;
   betalt_av: string | null;
@@ -28,7 +28,7 @@ export default function ForbrukTabell({
 
   function sumForCell(kategoriId: string, maned: number): number {
     return transaksjoner
-      .filter(t => t.kategori_id === kategoriId && new Date(t.dato).getMonth() + 1 === maned)
+      .filter(t => t.kategori === kategoriId && new Date(t.dato).getMonth() + 1 === maned)
       .reduce((s, t) => s + t.beløp, 0);
   }
 

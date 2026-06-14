@@ -7,7 +7,7 @@ import { MÅNEDER } from "@/lib/budsjett";
 interface Transaksjon {
   id: string;
   beløp: number;
-  kategori_id: string | null;
+  kategori: string | null;
 }
 
 interface Innsikt {
@@ -36,8 +36,8 @@ export default function AiInnsikt({
       // Aggreger faktisk forbruk per kategori fra transaksjoner
       const forbrukPerKategori: Record<string, number> = {};
       for (const t of transaksjoner) {
-        if (t.kategori_id) {
-          forbrukPerKategori[t.kategori_id] = (forbrukPerKategori[t.kategori_id] ?? 0) + t.beløp;
+        if (t.kategori) {
+          forbrukPerKategori[t.kategori] = (forbrukPerKategori[t.kategori] ?? 0) + t.beløp;
         }
       }
 

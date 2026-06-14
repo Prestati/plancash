@@ -14,7 +14,7 @@ interface Transaksjon {
   beløp: number;
   beskrivelse: string | null;
   betalt_av: string | null;
-  kategori_id: string | null;
+  kategori: string | null;
   kilde: string | null;
 }
 
@@ -303,10 +303,10 @@ export default function MånedsOversikt({
             style={{ borderBottom: idx < transaksjoner.length - 1 ? "1px solid var(--border)" : "none" }}>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
-                {t.beskrivelse || kategoriNavn(t.kategori_id)}
+                {t.beskrivelse || kategoriNavn(t.kategori)}
               </p>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                {kategoriNavn(t.kategori_id)} · {t.dato}
+                {kategoriNavn(t.kategori)} · {t.dato}
                 {t.betalt_av && t.betalt_av !== "felles" ? ` · ${t.betalt_av}` : ""}
               </p>
             </div>

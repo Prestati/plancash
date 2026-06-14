@@ -140,7 +140,7 @@ export default function RegistrerForbruk({
 
     const inserts = gruppeValg.map(gv => ({
       user_id: userId,
-      kategori_id: gv.kategoriId,
+      kategori: gv.kategoriId,
       dato: lagringsDato,
       beløp: gv.gruppe.beløp,
       beskrivelse: `${scanResultat?.butikk ? scanResultat.butikk + ": " : ""}${gv.gruppe.kategoriNavn}`,
@@ -165,7 +165,7 @@ export default function RegistrerForbruk({
     const supabase = createClient();
     const { error } = await supabase.from("transaksjoner").insert({
       user_id: userId,
-      kategori_id: kategoriId,
+      kategori: kategoriId,
       dato,
       beløp: Number(beløp),
       beskrivelse: beskrivelse || null,

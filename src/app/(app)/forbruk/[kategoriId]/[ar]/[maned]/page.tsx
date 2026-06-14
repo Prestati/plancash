@@ -30,7 +30,7 @@ export default async function ForbrukDetaljPage({
       .from("transaksjoner")
       .select("*")
       .eq("user_id", dataUserId)
-      .eq("kategori_id", kategoriId)
+      .eq("kategori", kategoriId)
       .gte("dato", `${år}-${manadStr}-01`)
       .lte("dato", `${år}-${manadStr}-31`)
       .order("dato", { ascending: false }),
