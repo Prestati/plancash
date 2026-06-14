@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
-    max_tokens: 1024,
+    max_tokens: 2048,
     messages: [
       {
         role: "user",
@@ -23,12 +23,30 @@ export async function POST(req: NextRequest) {
           },
           {
             type: "text",
-            text: `Les av denne kvitteringen og returner KUN et JSON-objekt med disse feltene (ingen forklaring, bare JSON):
+            text: `Les av denne kvitteringen og returner KUN et JSON-objekt (ingen forklaring, bare JSON).
+
+Grupper varene i meningsfulle kategorier basert på hva de er. Typiske kategorier:
+- Dagligvarer (mat, melk, brød, grønnsaker, kjøtt, etc.)
+- Godterier (sjokolade, drops, is, snacks, brus)
+- Alkohol (øl, vin, brennevin)
+- Tobakk/Snus
+- Hygiene/Vaskemidler (sjampo, såpe, vaskemiddel, tannbørste)
+- Husholdning (tørkepapir, batterier, lyspærer)
+- Annet (det som ikke passer andre steder)
+
+Returner bare kategorier som faktisk finnes på kvitteringen. Slå gjerne sammen veldig små kategorier med Dagligvarer hvis de er under 20 kr.
+
 {
-  "beløp": <totalt beløp som tall, ikke tekst>,
   "dato": "<dato i format YYYY-MM-DD, eller null hvis ikke synlig>",
   "butikk": "<navn på butikk/sted, eller null>",
-  "beskrivelse": "<kort beskrivelse av hva som ble kjøpt, maks 50 tegn>"
+  "totalBeløp": <totalt beløp som tall>,
+  "grupper": [
+    {
+      "kategoriNavn": "<kategorinavn på norsk>",
+      "beløp": <beløp som tall>,
+      "varer": ["<varenavn>", "<varenavn>"]
+    }
+  ]
 }`,
           },
         ],
