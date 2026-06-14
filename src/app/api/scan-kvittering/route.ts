@@ -43,7 +43,7 @@ Grupper varene slik:
 Returner bare kategorier som faktisk finnes. Slå sammen kategorier under 30 kr med nærmeste.
 
 {
-  "dato": "<dato i format YYYY-MM-DD, eller null>",
+  "dato": "<dato i format YYYY-MM-DD. NB: norske kvitteringer bruker DD.MM.YYYY — konverter riktig, f.eks. 12.06.2026 = 2026-06-12. Null hvis ikke synlig.>",
   "butikk": "<navn på butikk, eller null>",
   "totalBeløp": <totalt beløp som tall>,
   "grupper": [
