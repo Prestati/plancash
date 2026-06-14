@@ -21,7 +21,7 @@ export default async function ForbrukPage() {
       .order("sortering"),
     supabase
       .from("transaksjoner")
-      .select("id, kategori_id, dato, beløp, betalt_av")
+      .select("*")
       .eq("user_id", dataUserId)
       .gte("dato", `${år}-01-01`)
       .lte("dato", `${år}-12-31`),
