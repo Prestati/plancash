@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Plancash — varm krem-palett, søsken til Plandish */
+  --background: #F4EFE6;
+  --surface: #FFFFFF;
+  --border: #E2D9CC;
+
+  --text-primary: #2A1F14;
+  --text-secondary: #6B5B47;
+  --text-muted: #9C8B79;
+
+  /* Aksentfarge: varm slate-blå (tenk "økonomi, trygghet") */
+  --accent: #3D6373;
+  --accent-light: #EBF2F5;
+  --accent-hover: #2E4F5E;
+
+  /* Status */
+  --green: #4A7C5F;
+  --green-light: #EBF5EF;
+  --red: #C0524A;
+  --red-light: #FAEEED;
+  --amber: #C07830;
+  --amber-light: #FDF3E7;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-lato);
+  --font-display: var(--font-lora);
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-lora), Georgia, serif;
 }

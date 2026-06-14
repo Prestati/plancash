@@ -3,7 +3,36 @@
     "allow": [
       "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
       "Read(//Users/karoline/**)",
-      "Bash(npx create-next-app@latest plancash --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)"
+      "Bash(npx create-next-app@latest plancash --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "WebFetch(domain:www.plandish.no)",
+      "WebFetch(domain:www.oslomet.no)",
+      "WebFetch(domain:hdl.handle.net)",
+      "WebFetch(domain:nva.sikt.no)",
+      "Bash(extract-text \"/Users/karoline/Downloads/FINAL2026KTBUDSJETT.xlsx\")",
+      "Bash(pip3 install *)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import sys,json; p=json.load\\(sys.stdin\\); print\\('deps:', {k:v for k,v in {**p.get\\('dependencies',{}\\), **p.get\\('devDependencies',{}\\)}.items\\(\\) if 'tailwind' in k or 'postcss' in k}\\)\")",
+      "Bash(node -e \"const t = require\\('/Users/karoline/Plancash/node_modules/tailwindcss/package.json'\\); console.log\\(t.version\\)\")",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(python3 -c \"import sys; html = sys.stdin.read\\(\\); import re; css = re.findall\\(r'href=\\\\\"\\([^\\\\\"]*\\\\.css[^\\\\\"]*\\)\\\\\"', html\\); print\\(css\\)\")",
+      "Bash(curl -s \"http://localhost:3000/_next/static/css/app/layout.css?v=1781043815751\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/wci)",
+      "Bash(curl -s http://localhost:3000/wci)",
+      "WebSearch",
+      "WebFetch(domain:www.idrettsforbundet.no)",
+      "Bash(grep -v \"^$\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"next dev\" 2>/dev/null; sleep 1 *)",
+      "Bash(sed -i '' 's/\\\\.eq\\(\"år\",/\\\\.eq\\(\"ar\",/g; s/år,$/ar,/g; s/måned: aktivMåned/maned: aktivMåned/g' /Users/karoline/Plancash/src/components/budsjett/MånedligBudsjett.tsx)",
+      "Bash(sed -i '' 's/\\\\.eq\\(\"år\",/\\\\.eq\\(\"ar\",/g' /Users/karoline/Plancash/src/app/\\\\\\(app\\\\\\)/plancash/page.tsx)",
+      "Bash(npx tsc *)",
+      "Bash(open -a Finder /Users/karoline/Plancash)",
+      "Bash(osascript -e 'tell application \"Finder\" to set visible of every window to true')",
+      "Bash(mkdir -p \"/Users/karoline/Plancash/src/app/bli-med/[token]\")",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)"
     ]
   }
 }
