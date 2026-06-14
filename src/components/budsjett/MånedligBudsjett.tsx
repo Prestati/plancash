@@ -30,7 +30,9 @@ export default function MånedligBudsjett({
   const [lagrer, setLagrer] = useState<string | null>(null);
 
   useEffect(() => {
-    if (låstMåned !== undefined) setAktivMåned(låstMåned);
+    if (låstMåned !== undefined) {
+      setTimeout(() => setAktivMåned(låstMåned), 0);
+    }
   }, [låstMåned]);
 
   const månedAvvik = avvik.filter((a) => a.maned === aktivMåned + 1);

@@ -10,7 +10,7 @@ import {
 const TYPE_REKKEFØLGE: BudsjettType[] = ["inntekt", "fast", "gjeld", "abonnement", "forbruk", "sparing"];
 const MND_KORT = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"];
 
-export default function ÅrsbudsjettTabell({
+export default function ArsbudsjettTabell({
   userId,
   kategorier,
   eksisterendeAvvik,

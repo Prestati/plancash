@@ -75,14 +75,6 @@ export default function Sidebar({ user }: { user: User }) {
             >
               <span className="text-base">{mod.icon}</span>
               <span>{mod.name}</span>
-              {mod.soon && (
-                <span
-                  className="ml-auto text-xs px-1.5 py-0.5 rounded-md"
-                  style={{ background: "var(--border)", color: "var(--text-muted)" }}
-                >
-                  Snart
-                </span>
-              )}
               {mod.extern && (
                 <span className="ml-auto text-xs" style={{ color: "var(--text-muted)" }}>↗</span>
               )}
