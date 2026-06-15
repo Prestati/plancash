@@ -24,6 +24,7 @@ export async function POST(req: Request) {
   }
 
   const origin = new URL(req.url).origin;
+  const manuellLenke = `${origin}/bli-med/${invitasjon.token}`;
   const redirectTo = `${origin}/auth/aksepter?token=${invitasjon.token}`;
 
   // Send invitasjonsmail via Supabase admin
@@ -36,6 +37,6 @@ export async function POST(req: Request) {
     redirectTo,
   });
 
-  // Returner alltid lenken så den kan deles manuelt (e-post kan havne i spam)
-  return NextResponse.json({ link: redirectTo, epostSendt: !inviteError });
+  // Returner den manuelle lenken (ikke aksepter-URLen som er til e-post)
+  return NextResponse.json({ link: manuellLenke, epostSendt: !inviteError });
 }
