@@ -1,11 +1,13 @@
 import Link from "next/link";
+import AuthHashHandler from "@/components/AuthHashHandler";
 
 export default function Home() {
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col" suppressHydrationWarning
       style={{ background: "var(--background)" }}
     >
+      <AuthHashHandler />
       {/* Hero */}
       <div
         className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-10 text-center"
