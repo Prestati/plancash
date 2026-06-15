@@ -314,9 +314,6 @@ export default function MånedsOversikt({
             <span className="text-sm font-semibold shrink-0" style={{ color: "var(--red)" }}>
               {t.beløp.toLocaleString("nb-NO")} kr
             </span>
-            <button onClick={() => slettTransaksjon(t.id)}
-              className="text-xl opacity-20 hover:opacity-70 transition-opacity shrink-0"
-              style={{ color: "var(--red)" }}>×</button>
           </div>
         ))}
       </div>
