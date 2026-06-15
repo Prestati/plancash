@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import HusholdOppsett from "@/components/oppsett/HusholdOppsett";
 import InviterFamiliemedlem from "@/components/oppsett/InviterFamiliemedlem";
 import EndrePassord from "@/components/oppsett/EndrePassord";
+import LoggUtKnapp from "@/components/oppsett/LoggUtKnapp";
 
 export default async function OppsettPage() {
   const supabase = await createClient();
@@ -30,6 +31,7 @@ export default async function OppsettPage() {
         <HusholdOppsett userId={user!.id} eksisterendeProfil={profil} />
         <InviterFamiliemedlem userId={user!.id} />
         <EndrePassord />
+        <LoggUtKnapp email={user!.email ?? ""} />
       </div>
     </div>
   );
