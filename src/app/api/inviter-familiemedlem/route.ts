@@ -23,7 +23,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ feil: "Kunne ikke opprette invitasjon" }, { status: 500 });
   }
 
-  const redirectTo = `${new URL(req.url).origin}/bli-med/${invitasjon.token}`;
+  const origin = new URL(req.url).origin;
+  const redirectTo = `${origin}/auth/aksepter?token=${invitasjon.token}`;
 
   // Send invitasjonsmail via Supabase admin
   const admin = createAdminClient(
