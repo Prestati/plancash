@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 const client = new Anthropic();
 
@@ -11,9 +12,34 @@ interface KategoriData {
 }
 
 export async function POST(req: NextRequest) {
-  const { navn, kategorier, måned }: { navn: string; kategorier: KategoriData[]; måned: string } = await req.json();
+  // Auth-sjekk
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ feil: "Ikke innlogget" }, { status: 401 });
+  }
 
-  const forbrukLinjer = kategorier
+  const body = await req.json();
+  const { navn, kategorier, måned } = body;
+
+  // Valider og sanitér input
+  if (!Array.isArray(kategorier) || kategorier.length === 0) {
+    return NextResponse.json([], { status: 200 });
+  }
+  if (kategorier.length > 100) {
+    return NextResponse.json({ feil: "For mange kategorier" }, { status: 400 });
+  }
+
+  // Sanitér brukernavnet — bare behold bokstaver, tall og mellomrom
+  const sikkertNavn = typeof navn === "string"
+    ? navn.replace(/[^a-zA-ZæøåÆØÅ0-9 ]/g, "").slice(0, 50)
+    : "deg";
+
+  const sikkertMåned = typeof måned === "string"
+    ? måned.replace(/[^a-zA-ZæøåÆØÅ]/g, "").slice(0, 20)
+    : "måneden";
+
+  const forbrukLinjer = (kategorier as KategoriData[])
     .filter(k => k.forbruk > 0 || k.budsjett > 0)
     .map(k => {
       const diff = k.forbruk - k.budsjett;
@@ -23,15 +49,17 @@ export async function POST(req: NextRequest) {
     })
     .join("\n");
 
+  if (!forbrukLinjer) return NextResponse.json([]);
+
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 600,
     messages: [
       {
         role: "user",
-        content: `Du er en vennlig og praktisk norsk privatøkonomi-rådgiver. Brukeren heter ${navn}.
+        content: `Du er en vennlig og praktisk norsk privatøkonomi-rådgiver. Brukeren heter ${sikkertNavn}.
 
-Her er ${navn} sitt forbruk i ${måned} sammenlignet med budsjettet:
+Her er ${sikkertNavn} sitt forbruk i ${sikkertMåned} sammenlignet med budsjettet:
 ${forbrukLinjer}
 
 Skriv 2-3 korte, konkrete og oppmuntrende observasjoner på norsk. Vær direkte og personlig — bruk fornavn.

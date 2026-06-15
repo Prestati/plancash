@@ -32,7 +32,8 @@
       "Bash(open -a Finder /Users/karoline/Plancash)",
       "Bash(osascript -e 'tell application \"Finder\" to set visible of every window to true')",
       "Bash(mkdir -p \"/Users/karoline/Plancash/src/app/bli-med/[token]\")",
-      "Bash(lsof -i :3000 -sTCP:LISTEN)"
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(xargs ls -1)"
     ]
   }
 }
