@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { BudsjettKategori } from "@/lib/budsjett";
 
@@ -24,6 +25,7 @@ export default function ForbrukTabell({
 }) {
   const router = useRouter();
   const nåMåned = new Date().getMonth() + 1;
+  const [valgtMåned, setValgtMåned] = useState(nåMåned);
   const forbrukKategorier = kategorier.filter(k => k.type === "forbruk" && k.aktiv);
 
   function sumForCell(kategoriId: string, maned: number): number {
@@ -42,51 +44,84 @@ export default function ForbrukTabell({
 
   const årstotal = Array.from({ length: 12 }, (_, i) => sumPerMåned(i + 1)).reduce((s, v) => s + v, 0);
 
-  const nåMåned2 = nåMåned;
-
   return (
     <div>
-    {/* Mobilvisning — kortliste for inneværende måned */}
-    <div className="md:hidden space-y-2 mb-4">
-      <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>
-        {MND_KORT[nåMåned2 - 1]} — inneværende måned
-      </p>
-      {forbrukKategorier.map(k => {
-        const sum = sumForCell(k.id, nåMåned2);
-        return (
-          <div
-            key={k.id}
-            onClick={() => sum > 0 && router.push(`/forbruk/${k.id}/${år}/${nåMåned2}`)}
-            className="flex items-center justify-between px-4 py-3 rounded-xl"
-            style={{
-              background: sum > 0 ? "var(--red-light)" : "var(--surface)",
-              border: `1px solid ${sum > 0 ? "var(--red)" : "var(--border)"}`,
-              cursor: sum > 0 ? "pointer" : "default",
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium" style={{ color: sum > 0 ? "var(--red)" : "var(--text-primary)" }}>
-                {k.navn}
-              </span>
-              {k.eier && k.eier !== "felles" && (
-                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
-                  {k.eier}
+    {/* Mobilvisning — kortliste med månedsblaing */}
+    <div className="md:hidden mb-4">
+      {/* Månedsvelger */}
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setValgtMåned(m => m > 1 ? m - 1 : 12)}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-base"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+        >←</button>
+        <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+          {MND_KORT[valgtMåned - 1]} {år}
+          {valgtMåned === nåMåned && <span className="ml-2 text-xs font-normal" style={{ color: "var(--accent)" }}>• nå</span>}
+        </p>
+        <button
+          onClick={() => setValgtMåned(m => m < 12 ? m + 1 : 1)}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-base"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
+        >→</button>
+      </div>
+
+      <div className="space-y-2">
+        {forbrukKategorier.map(k => {
+          const sum = sumForCell(k.id, valgtMåned);
+          const budsjett = k.standard_beløp;
+          const overBudsjett = budsjett > 0 && sum > budsjett;
+          return (
+            <div
+              key={k.id}
+              onClick={() => sum > 0 && router.push(`/forbruk/${k.id}/${år}/${valgtMåned}`)}
+              className="px-4 py-3 rounded-xl"
+              style={{
+                background: sum > 0 ? "var(--red-light)" : "var(--surface)",
+                border: `1px solid ${overBudsjett ? "var(--red)" : sum > 0 ? "var(--red)" : "var(--border)"}`,
+                cursor: sum > 0 ? "pointer" : "default",
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium" style={{ color: sum > 0 ? "var(--red)" : "var(--text-primary)" }}>
+                    {k.navn}
+                  </span>
+                  {k.eier && k.eier !== "felles" && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
+                      {k.eier}
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm font-semibold" style={{ color: sum > 0 ? "var(--red)" : "var(--text-muted)" }}>
+                  {sum > 0 ? `${Math.round(sum).toLocaleString("nb-NO")} kr →` : "0"}
                 </span>
+              </div>
+              {budsjett > 0 && sum > 0 && (
+                <div className="mt-2">
+                  <div className="flex justify-between text-xs mb-1" style={{ color: "var(--text-muted)" }}>
+                    <span>{Math.round((sum / budsjett) * 100)}% av {budsjett.toLocaleString("nb-NO")} kr budsjett</span>
+                    {overBudsjett && <span style={{ color: "var(--red)", fontWeight: 600 }}>+{Math.round(sum - budsjett).toLocaleString("nb-NO")} kr over</span>}
+                  </div>
+                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+                    <div className="h-full rounded-full" style={{
+                      width: `${Math.min((sum / budsjett) * 100, 100)}%`,
+                      background: overBudsjett ? "var(--red)" : "var(--green)",
+                    }} />
+                  </div>
+                </div>
               )}
             </div>
-            <span className="text-sm font-semibold" style={{ color: sum > 0 ? "var(--red)" : "var(--text-muted)" }}>
-              {sum > 0 ? `${sum.toLocaleString("nb-NO")} kr →` : "0"}
-            </span>
+          );
+        })}
+        {sumPerMåned(valgtMåned) > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl font-bold"
+            style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
+            <span className="text-sm" style={{ color: "var(--text-primary)" }}>Totalt</span>
+            <span className="text-sm" style={{ color: "var(--red)" }}>{Math.round(sumPerMåned(valgtMåned)).toLocaleString("nb-NO")} kr</span>
           </div>
-        );
-      })}
-      {sumPerMåned(nåMåned2) > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 rounded-xl font-bold"
-          style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
-          <span className="text-sm" style={{ color: "var(--text-primary)" }}>Totalt</span>
-          <span className="text-sm" style={{ color: "var(--red)" }}>{sumPerMåned(nåMåned2).toLocaleString("nb-NO")} kr</span>
-        </div>
-      )}
+        )}
+      </div>
     </div>
 
     {/* Desktop — full tabell */}
