@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import BliMedSkjema from "./BliMedSkjema";
 
@@ -8,7 +9,12 @@ export default async function BliMedPage({ params }: { params: Promise<{ token: 
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: invitasjon } = await supabase
+  // Bruk admin-klient for å lese invitasjon (omgår RLS for uautentiserte)
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const { data: invitasjon } = await admin
     .from("hushold_invitasjoner")
     .select("*")
     .eq("token", token)
