@@ -32,7 +32,8 @@ export async function middleware(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
   const isPublicPage =
     request.nextUrl.pathname === "/" ||
-    request.nextUrl.pathname.startsWith("/wci");
+    request.nextUrl.pathname.startsWith("/wci") ||
+    request.nextUrl.pathname.startsWith("/bli-med/");
 
   if (!user && !isAuthPage && !isPublicPage) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
