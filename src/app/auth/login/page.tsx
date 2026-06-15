@@ -59,11 +59,19 @@ function LoginForm() {
       </div>
 
       <div className="flex-1 flex flex-col max-w-sm mx-auto w-full">
+        {erInvitasjon && (
+          <div className="mb-6 p-4 rounded-2xl" style={{ background: "var(--accent-light)", border: "1.5px solid var(--accent)" }}>
+            <p className="text-sm font-semibold" style={{ color: "var(--accent)" }}>🎉 Du er invitert til Plancash!</p>
+            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
+              Opprett en konto for å få tilgang til familiebudsjettet.
+            </p>
+          </div>
+        )}
         <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
           {isSignUp ? "Opprett konto" : "Logg inn"}
         </h1>
         <p className="text-base mb-8" style={{ color: "var(--text-muted)" }}>
-          {isSignUp ? "Bli med i Plan-familien" : "Velkommen tilbake"}
+          {isSignUp ? "Velg en e-post og passord" : "Velkommen tilbake"}
         </p>
 
         {message && (
