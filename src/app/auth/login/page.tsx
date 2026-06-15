@@ -8,13 +8,14 @@ import Link from "next/link";
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "/dashboard";
+  const erInvitasjon = redirectTo.startsWith("/bli-med/");
+  const [isSignUp, setIsSignUp] = useState(erInvitasjon);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,9 +24,14 @@ function LoginForm() {
     const supabase = createClient();
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}${redirectTo}` },
+      });
       if (error) setError(error.message);
-      else setMessage("Sjekk e-posten din for bekreftelseslenke!");
+      else if (data.session) router.push(redirectTo);
+      else setMessage("Sjekk e-posten din for en bekreftelseslenke, og klikk på den for å fullføre.");
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
@@ -120,10 +126,22 @@ function LoginForm() {
             className="w-full py-4 rounded-2xl font-semibold text-base text-white transition-opacity disabled:opacity-50 active:opacity-80"
             style={{ background: "var(--accent)" }}
           >
-            {loading ? "Laster..." : isSignUp ? "Opprett konto" : "Logg inn"}
+            {loading ? "Laster..." : isSignUp ? "Opprett konto →" : "Logg inn →"}
           </button>
         </form>
 
+        {erInvitasjon && (
+          <p className="mt-6 text-sm text-center" style={{ color: "var(--text-muted)" }}>
+            {isSignUp ? "Har du allerede konto?" : "Ny bruker?"}{" "}
+            <button
+              onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
+              className="font-medium underline underline-offset-2"
+              style={{ color: "var(--accent)" }}
+            >
+              {isSignUp ? "Logg inn i stedet" : "Opprett konto"}
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );

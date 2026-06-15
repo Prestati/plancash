@@ -186,7 +186,7 @@ export default function MånedsBetaling({
               </div>
               <input type="number" defaultValue={verdi || ""} key={`${k.id}-${maned}`}
                 onBlur={(e) => { const ny = Number(e.target.value) || 0; if (ny !== verdi) oppdaterBeløp(k, e.target.value); e.target.style.borderColor = "var(--border)"; }}
-                onFocus={(e) => { e.target.style.borderColor = "var(--accent)"; if (!bekreftet) toggleBetalt(k); }}
+                onFocus={(e) => { e.target.style.borderColor = "var(--accent)"; }}
                 className="w-24 md:w-32 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
                 style={{ background: avviker ? "white" : "var(--background)", border: `1px solid ${avviker ? "var(--amber)" : "var(--border)"}`, color: avviker ? "var(--amber)" : "var(--text-primary)" }} />
             </div>
@@ -261,7 +261,6 @@ export default function MånedsBetaling({
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = "var(--accent)";
-                  if (!betalt) toggleBetalt(k); // merk som betalt når du begynner å redigere
                 }}
                 className="w-24 md:w-32 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
                 style={{

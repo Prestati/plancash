@@ -11,21 +11,21 @@ export default function InviterFamiliemedlem({ userId }: { userId: string }) {
   async function sendInvitasjon() {
     if (!epost.trim()) return;
     setStatus("sender");
-    const supabase = createClient();
 
-    const { data, error } = await supabase
-      .from("hushold_invitasjoner")
-      .insert({ eier_user_id: userId, epost: epost.trim() })
-      .select()
-      .single();
+    const res = await fetch("/api/inviter-familiemedlem", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ epost: epost.trim() }),
+    });
 
-    if (error || !data) {
+    const json = await res.json();
+
+    if (!res.ok) {
       setStatus("feil");
       return;
     }
 
-    const link = `${window.location.origin}/bli-med/${data.token}`;
-    setInviteLink(link);
+    if (json.link) setInviteLink(json.link);
     setStatus("sendt");
     setEpost("");
   }
@@ -64,11 +64,11 @@ export default function InviterFamiliemedlem({ userId }: { userId: string }) {
       ) : (
         <div className="space-y-3">
           <div className="p-3 rounded-xl text-sm" style={{ background: "var(--green-light)", color: "var(--green)" }}>
-            ✓ Invitasjon opprettet!
+            ✓ Invitasjon klar! Del lenken under på SMS eller lignende.
           </div>
-          <div>
+          {inviteLink && <div>
             <p className="text-xs mb-1.5 font-medium" style={{ color: "var(--text-muted)" }}>
-              Del denne lenken med familiemedlemmet:
+              Send denne lenken til familiemedlemmet:
             </p>
             <div className="flex gap-2">
               <input
@@ -85,7 +85,7 @@ export default function InviterFamiliemedlem({ userId }: { userId: string }) {
                 Kopier
               </button>
             </div>
-          </div>
+          </div>}
           <button
             onClick={() => { setStatus("idle"); setInviteLink(null); }}
             className="text-xs"

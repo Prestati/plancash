@@ -1,0 +1,40 @@
+import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
+
+export async function POST(req: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ feil: "Ikke innlogget" }, { status: 401 });
+
+  const { epost } = await req.json();
+  if (!epost || typeof epost !== "string") {
+    return NextResponse.json({ feil: "Mangler e-post" }, { status: 400 });
+  }
+
+  // Opprett invitasjon i databasen
+  const { data: invitasjon, error } = await supabase
+    .from("hushold_invitasjoner")
+    .insert({ eier_user_id: user.id, epost: epost.trim() })
+    .select()
+    .single();
+
+  if (error || !invitasjon) {
+    return NextResponse.json({ feil: "Kunne ikke opprette invitasjon" }, { status: 500 });
+  }
+
+  const redirectTo = `${new URL(req.url).origin}/bli-med/${invitasjon.token}`;
+
+  // Send invitasjonsmail via Supabase admin
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
+  const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(epost.trim(), {
+    redirectTo,
+  });
+
+  // Returner alltid lenken så den kan deles manuelt (e-post kan havne i spam)
+  return NextResponse.json({ link: redirectTo, epostSendt: !inviteError });
+}
