@@ -3,6 +3,7 @@ import { getDataUserId } from "@/lib/hushold";
 import { MÅNEDER } from "@/lib/budsjett";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import ForbrukAiInnsikt from "@/components/budsjett/ForbrukAiInnsikt";
 
 export default async function ForbrukDetaljPage({
   params,
@@ -87,26 +88,17 @@ export default async function ForbrukDetaljPage({
         </div>
       </div>
 
-      {/* Hyppige beskrivelser */}
-      {hyppige.length > 0 && (
-        <div
-          className="rounded-2xl p-5 mb-6"
-          style={{ background: "var(--accent-light)", border: "1.5px solid var(--accent)" }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <span>✨</span>
-            <span className="text-sm font-bold" style={{ color: "var(--accent)", fontFamily: "var(--font-lora)" }}>
-              Innsikt
-            </span>
-          </div>
-          <div className="space-y-1.5">
-            {hyppige.map(([beskrivelse, antall]) => (
-              <p key={beskrivelse} className="text-sm" style={{ color: "var(--text-primary)" }}>
-                💡 <span className="font-medium capitalize">{beskrivelse}</span> dukker opp {antall} ganger denne måneden
-              </p>
-            ))}
-          </div>
-        </div>
+      {/* AI-innsikt */}
+      {(transaksjoner ?? []).length > 0 && (
+        <ForbrukAiInnsikt
+          transaksjoner={(transaksjoner ?? []).map(t => ({
+            beskrivelse: t.beskrivelse,
+            beløp: t.beløp,
+            dato: t.dato,
+          }))}
+          kategoriNavn={kategori?.navn ?? kategoriId}
+          maaned={`${MÅNEDER[manadNr - 1]} ${år}`}
+        />
       )}
 
       {/* Transaksjonsliste */}

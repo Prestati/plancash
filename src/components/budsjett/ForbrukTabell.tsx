@@ -42,8 +42,55 @@ export default function ForbrukTabell({
 
   const årstotal = Array.from({ length: 12 }, (_, i) => sumPerMåned(i + 1)).reduce((s, v) => s + v, 0);
 
+  const nåMåned2 = nåMåned;
+
   return (
-    <div className="overflow-auto" style={{ maxHeight: "75vh" }}>
+    <div>
+    {/* Mobilvisning — kortliste for inneværende måned */}
+    <div className="md:hidden space-y-2 mb-4">
+      <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>
+        {MND_KORT[nåMåned2 - 1]} — inneværende måned
+      </p>
+      {forbrukKategorier.map(k => {
+        const sum = sumForCell(k.id, nåMåned2);
+        return (
+          <div
+            key={k.id}
+            onClick={() => sum > 0 && router.push(`/forbruk/${k.id}/${år}/${nåMåned2}`)}
+            className="flex items-center justify-between px-4 py-3 rounded-xl"
+            style={{
+              background: sum > 0 ? "var(--red-light)" : "var(--surface)",
+              border: `1px solid ${sum > 0 ? "var(--red)" : "var(--border)"}`,
+              cursor: sum > 0 ? "pointer" : "default",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium" style={{ color: sum > 0 ? "var(--red)" : "var(--text-primary)" }}>
+                {k.navn}
+              </span>
+              {k.eier && k.eier !== "felles" && (
+                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
+                  {k.eier}
+                </span>
+              )}
+            </div>
+            <span className="text-sm font-semibold" style={{ color: sum > 0 ? "var(--red)" : "var(--text-muted)" }}>
+              {sum > 0 ? `${sum.toLocaleString("nb-NO")} kr →` : "0"}
+            </span>
+          </div>
+        );
+      })}
+      {sumPerMåned(nåMåned2) > 0 && (
+        <div className="flex items-center justify-between px-4 py-3 rounded-xl font-bold"
+          style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
+          <span className="text-sm" style={{ color: "var(--text-primary)" }}>Totalt</span>
+          <span className="text-sm" style={{ color: "var(--red)" }}>{sumPerMåned(nåMåned2).toLocaleString("nb-NO")} kr</span>
+        </div>
+      )}
+    </div>
+
+    {/* Desktop — full tabell */}
+    <div className="hidden md:block overflow-auto" style={{ maxHeight: "75vh" }}>
       <table className="w-full text-sm border-collapse" style={{ minWidth: "900px" }}>
         <thead>
           <tr className="sticky top-0 z-20">
@@ -170,6 +217,7 @@ export default function ForbrukTabell({
       <p className="mt-3 px-1 text-xs" style={{ color: "var(--text-muted)" }}>
         Rødt = registrert forbruk · Blått = inneværende måned · Klikk et beløp for å se detaljene
       </p>
+    </div>
     </div>
   );
 }

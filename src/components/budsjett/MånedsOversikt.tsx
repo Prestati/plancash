@@ -253,7 +253,7 @@ export default function MånedsOversikt({
               <input type="number" defaultValue={beløpForPost(k) || ""}
                 key={`${k.id}-${maned}`}
                 onBlur={(e) => { const ny = Number(e.target.value) || 0; if (ny !== beløpForPost(k)) oppdaterBeløp(k, e.target.value); }}
-                onFocus={(e) => { e.target.style.borderColor = "var(--accent)"; if (!erBetalt(k)) toggleBetalt(k); }}
+                onFocus={(e) => { e.target.style.borderColor = "var(--accent)"; }}
                 className="w-20 md:w-28 text-right text-sm px-2 py-1.5 rounded-lg outline-none"
                 style={{ background: "var(--background)", border: "1px solid var(--border)", color: "var(--text-primary)" }} />
             </div>
