@@ -128,7 +128,7 @@ export default function MånedsOversikt({
         <h1 className="text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-lora)" }}>
           {MÅNEDER[maned - 1]}
         </h1>
-        <div className="flex items-end justify-between">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <p className="text-sm opacity-70">Til overs denne måneden</p>
             <p className="text-4xl font-bold" style={{ fontFamily: "var(--font-lora)" }}>
@@ -210,7 +210,7 @@ export default function MånedsOversikt({
                 <input type="number" defaultValue={verdi || ""} key={`${k.id}-${maned}`}
                   onBlur={(e) => { const ny = Number(e.target.value) || 0; if (ny !== verdi) oppdaterBeløp(k, e.target.value); }}
                   onFocus={(e) => { e.target.style.borderColor = "var(--green)"; }}
-                  className="w-28 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
+                  className="w-20 md:w-28 text-right text-sm px-2 py-1.5 rounded-lg outline-none"
                   style={{ background: avviker ? "white" : "var(--background)", border: `1px solid ${avviker ? "var(--amber)" : "var(--border)"}`, color: avviker ? "var(--amber)" : "var(--text-primary)" }} />
               </div>
             );
@@ -254,7 +254,7 @@ export default function MånedsOversikt({
                 key={`${k.id}-${maned}`}
                 onBlur={(e) => { const ny = Number(e.target.value) || 0; if (ny !== beløpForPost(k)) oppdaterBeløp(k, e.target.value); }}
                 onFocus={(e) => { e.target.style.borderColor = "var(--accent)"; if (!erBetalt(k)) toggleBetalt(k); }}
-                className="w-28 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
+                className="w-20 md:w-28 text-right text-sm px-2 py-1.5 rounded-lg outline-none"
                 style={{ background: "var(--background)", border: "1px solid var(--border)", color: "var(--text-primary)" }} />
             </div>
           ))}

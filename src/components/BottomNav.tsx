@@ -30,14 +30,17 @@ export default function BottomNav() {
           <Link
             key={item.href}
             href={item.href}
-            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all"
+            className="relative flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all"
             style={{
               color: aktiv ? "var(--accent)" : "var(--text-muted)",
               fontWeight: aktiv ? 600 : 400,
             }}
           >
             <span className="text-xl leading-none">{item.icon}</span>
-            <span className="text-xs">{item.label}</span>
+            <span className="text-xs leading-none">{item.label}</span>
+            {aktiv && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full" style={{ background: "var(--accent)" }} />
+            )}
           </Link>
         );
       })}

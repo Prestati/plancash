@@ -95,7 +95,7 @@ export default function MånedsBetaling({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => setManed(m => m > 1 ? m - 1 : 12)}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-base"
           style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
         >
           ←
@@ -105,7 +105,7 @@ export default function MånedsBetaling({
         </h2>
         <button
           onClick={() => setManed(m => m < 12 ? m + 1 : 1)}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-base"
           style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}
         >
           →
@@ -160,7 +160,7 @@ export default function MånedsBetaling({
           const verdi = beløpForPost(k);
           const avviker = verdi !== k.standard_beløp;
           return (
-            <div key={k.id} className="flex items-center gap-4 px-5 py-4"
+            <div key={k.id} className="flex items-center gap-3 px-4 py-4 md:px-5 md:gap-4"
               style={{
                 borderBottom: idx < inntektKategorier.length - 1 ? "1px solid var(--border)" : "none",
                 background: bekreftet ? "var(--green-light)" : "transparent",
@@ -187,7 +187,7 @@ export default function MånedsBetaling({
               <input type="number" defaultValue={verdi || ""} key={`${k.id}-${maned}`}
                 onBlur={(e) => { const ny = Number(e.target.value) || 0; if (ny !== verdi) oppdaterBeløp(k, e.target.value); e.target.style.borderColor = "var(--border)"; }}
                 onFocus={(e) => { e.target.style.borderColor = "var(--accent)"; if (!bekreftet) toggleBetalt(k); }}
-                className="w-32 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
+                className="w-24 md:w-32 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
                 style={{ background: avviker ? "white" : "var(--background)", border: `1px solid ${avviker ? "var(--amber)" : "var(--border)"}`, color: avviker ? "var(--amber)" : "var(--text-primary)" }} />
             </div>
           );
@@ -204,7 +204,7 @@ export default function MånedsBetaling({
           return (
             <div
               key={k.id}
-              className="flex items-center gap-4 px-5 py-4"
+              className="flex items-center gap-3 px-4 py-4 md:px-5 md:gap-4"
               style={{
                 borderBottom: idx < fasteKategorier.length - 1 ? "1px solid var(--border)" : "none",
                 background: betalt ? "var(--green-light)" : "transparent",
@@ -263,7 +263,7 @@ export default function MånedsBetaling({
                   e.target.style.borderColor = "var(--accent)";
                   if (!betalt) toggleBetalt(k); // merk som betalt når du begynner å redigere
                 }}
-                className="w-32 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
+                className="w-24 md:w-32 text-right text-sm px-3 py-1.5 rounded-lg outline-none"
                 style={{
                   background: avviker ? "white" : "var(--background)",
                   border: `1px solid ${avviker ? "var(--amber)" : "var(--border)"}`,

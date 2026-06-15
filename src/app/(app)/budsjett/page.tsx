@@ -26,7 +26,7 @@ export default async function BudsjettPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
+        <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
           Budsjettoppsett
         </h1>
         <p style={{ color: "var(--text-secondary)" }}>

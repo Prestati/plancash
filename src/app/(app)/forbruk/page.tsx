@@ -29,9 +29,9 @@ export default async function ForbrukPage() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between gap-3 flex-wrap mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
             Forbrukslogg {år}
           </h1>
           <p style={{ color: "var(--text-secondary)" }}>
