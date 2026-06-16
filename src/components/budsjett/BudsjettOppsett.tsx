@@ -147,7 +147,7 @@ export default function BudsjettOppsett({
   }).filter(p => p.inntekt > 0 || p.utgift > 0);
 
   return (
-    <div className="flex gap-8">
+    <div className="flex flex-col md:flex-row gap-8">
       {/* Venstre: oppsett */}
       <div className="flex-1 min-w-0">
         {/* Type-tabs */}
@@ -358,7 +358,7 @@ export default function BudsjettOppsett({
       </div>
 
       {/* Høyre: sammendrag + SIFO */}
-      <div className="w-72 shrink-0 space-y-4">
+      <div className="w-full md:w-72 md:shrink-0 space-y-4">
         {/* Månedlig sammendrag */}
         <div className="rounded-2xl p-5 sticky top-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           <h3 className="font-bold text-sm mb-4" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
