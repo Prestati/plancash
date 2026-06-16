@@ -39,6 +39,8 @@ export default function MånedsOversikt({
   const [transaksjoner, setTransaksjoner] = useState(initTransaksjoner);
   const [lagrer, setLagrer] = useState<string | null>(null);
   const [visFaste, setVisFaste] = useState(false);
+  const [visBetalte, setVisBetalte] = useState(false);
+  const [visTransaksjoner, setVisTransaksjoner] = useState(false);
 
   const fasteKategorier = kategorier.filter(k =>
     FASTE_TYPER.includes(k.type as typeof FASTE_TYPER[number]) && k.aktiv
@@ -264,15 +266,22 @@ export default function MånedsOversikt({
       {/* Betalte faste poster */}
       {antallBetalt > 0 && (
         <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-          <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)" }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: "var(--green-light)", color: "var(--green)" }}>✓</div>
-            <div>
-              <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Betalte poster</p>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{antallBetalt} av {fasteKategorier.length}</p>
+          <button
+            className="w-full flex items-center justify-between px-5 py-4"
+            onClick={() => setVisBetalte(!visBetalte)}
+            style={{ borderBottom: visBetalte ? "1px solid var(--border)" : "none" }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: "var(--green-light)", color: "var(--green)" }}>✓</div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Betalte poster</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>{antallBetalt} av {fasteKategorier.length}</p>
+              </div>
             </div>
-          </div>
-          {fasteKategorier.filter(k => erBetalt(k)).map((k, idx, arr) => (
+            <span style={{ color: "var(--text-muted)" }}>{visBetalte ? "▲" : "▼"}</span>
+          </button>
+          {visBetalte && fasteKategorier.filter(k => erBetalt(k)).map((k, idx, arr) => (
             <div key={k.id} className="flex items-center gap-3 px-5 py-3"
               style={{ borderBottom: idx < arr.length - 1 ? "1px solid var(--border)" : "none", background: "var(--green-light)" }}>
               <button onClick={() => toggleBetalt(k)} disabled={lagrer === k.id}
@@ -289,17 +298,24 @@ export default function MånedsOversikt({
 
       {/* Transaksjoner */}
       <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-        <div className="px-5 py-4 flex items-center gap-3" style={{ borderBottom: transaksjoner.length > 0 ? "1px solid var(--border)" : "none" }}>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: "var(--accent-light)", color: "var(--accent)" }}>🧾</div>
-          <div>
-            <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Registrert forbruk</p>
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-              {transaksjoner.length === 0 ? "Ingen ennå — scan en kvittering!" : `${totalTransaksjoner.toLocaleString("nb-NO")} kr totalt`}
-            </p>
+        <button
+          className="w-full flex items-center justify-between px-5 py-4"
+          onClick={() => setVisTransaksjoner(!visTransaksjoner)}
+          style={{ borderBottom: visTransaksjoner && transaksjoner.length > 0 ? "1px solid var(--border)" : "none" }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: "var(--accent-light)", color: "var(--accent)" }}>🧾</div>
+            <div className="text-left">
+              <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Registrert forbruk</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                {transaksjoner.length === 0 ? "Ingen ennå — scan en kvittering!" : `${totalTransaksjoner.toLocaleString("nb-NO")} kr totalt`}
+              </p>
+            </div>
           </div>
-        </div>
-        {transaksjoner.map((t, idx) => (
+          {transaksjoner.length > 0 && <span style={{ color: "var(--text-muted)" }}>{visTransaksjoner ? "▲" : "▼"}</span>}
+        </button>
+        {visTransaksjoner && transaksjoner.map((t, idx) => (
           <div key={t.id} className="flex items-center gap-3 px-5 py-3"
             style={{ borderBottom: idx < transaksjoner.length - 1 ? "1px solid var(--border)" : "none" }}>
             <div className="flex-1 min-w-0">
