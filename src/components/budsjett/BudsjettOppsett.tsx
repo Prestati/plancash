@@ -360,7 +360,7 @@ export default function BudsjettOppsett({
       {/* Høyre: sammendrag + SIFO */}
       <div className="w-full md:w-72 md:shrink-0 space-y-4">
         {/* Månedlig sammendrag */}
-        <div className="rounded-2xl p-5 sticky top-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+        <div className="rounded-2xl p-5 md:sticky md:top-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           <h3 className="font-bold text-sm mb-4" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
             Månedlig oversikt
           </h3>

@@ -219,7 +219,7 @@ export default function RegistrerForbruk({
         style={{
           background: "var(--surface)",
           border: "1px solid var(--border)",
-          maxHeight: "92dvh",
+          maxHeight: "88vh",
         }}
       >
         {/* Header — fast */}
