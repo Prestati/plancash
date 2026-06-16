@@ -138,7 +138,6 @@ export default function ScanKvittering({
               ref={filRef}
               type="file"
               accept="image/*"
-              capture="environment"
               className="hidden"
               onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
             />
