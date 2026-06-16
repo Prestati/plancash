@@ -115,6 +115,14 @@ export default function MånedsOversikt({
   const totalFaste = fasteKategorier.reduce((s, k) => s + beløpForPost(k), 0);
   const tilOvers = totalInntekt - totalFaste - totalTransaksjoner;
 
+  const sparingKategorier = kategorier.filter(k => k.type === "sparing" && k.aktiv);
+  const totalSparing = sparingKategorier.reduce((s, k) => {
+    const override = månedAvvik.find(a => a.kategori_id === k.id);
+    return s + (override ? override.belop : k.standard_beløp);
+  }, 0);
+  const totalBetalteFaste = fasteKategorier.filter(k => erBetalt(k)).reduce((s, k) => s + beløpForPost(k), 0);
+  const totalBrukt = totalBetalteFaste + totalTransaksjoner;
+
   const ubetalteFaste = fasteKategorier.filter(k => !erBetalt(k));
   const totalInntektBekreftet = inntektKategorier.filter(k => erBetalt(k)).reduce((s, k) => s + beløpForPost(k), 0);
 
@@ -142,20 +150,13 @@ export default function MånedsOversikt({
       </div>
 
       {/* Statskort */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <StatKort
           ikon="✓"
           verdi={`${antallBetalt}/${fasteKategorier.length}`}
           label="Faste betalt"
           farge={gjenstår === 0 ? "var(--green)" : "var(--amber)"}
           detalj={gjenstår > 0 ? `${gjenstår} gjenstår` : "Alle betalt!"}
-        />
-        <StatKort
-          ikon="🧾"
-          verdi={`${transaksjoner.length}`}
-          label="Transaksjoner"
-          farge="var(--accent)"
-          detalj={`${totalTransaksjoner.toLocaleString("nb-NO")} kr`}
         />
         <StatKort
           ikon="💰"
@@ -170,6 +171,29 @@ export default function MånedsOversikt({
           label="Faste utgifter"
           farge="var(--red)"
           detalj="kr denne måneden"
+        />
+        <StatKort
+          ikon="🛒"
+          verdi={`${totalBrukt.toLocaleString("nb-NO")}`}
+          label="Totalt brukt"
+          farge="var(--red)"
+          detalj={`regninger + forbruk`}
+        />
+        {sparingKategorier.length > 0 && (
+          <StatKort
+            ikon="🐷"
+            verdi={`${totalSparing.toLocaleString("nb-NO")}`}
+            label="Sparing"
+            farge="var(--green)"
+            detalj="kr denne måneden"
+          />
+        )}
+        <StatKort
+          ikon="🧾"
+          verdi={`${transaksjoner.length}`}
+          label="Transaksjoner"
+          farge="var(--accent)"
+          detalj={`${totalTransaksjoner.toLocaleString("nb-NO")} kr`}
         />
       </div>
 
