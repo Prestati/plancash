@@ -49,32 +49,23 @@ export async function POST(req: NextRequest) {
             type: "text",
             text: `Les av denne kvitteringen og returner KUN et JSON-objekt (ingen forklaring, bare JSON).
 
-VIKTIGE REGLER:
-1. PANT på kvitteringen hører alltid til varen rett over. Legg pant-beløpet til i samme kategori som den tilhørende varen — ikke lag en egen PANT-kategori.
-2. Alkohol: Carlsberg, Hansa, Ringnes, Tuborg, Heineken, Smirnoff, Absolut, øl, vin, brennevin, cider = Alkohol-kategorien. Ikke bland disse med Dagligvarer.
-3. ZEROH, Coca-Cola, Pepsi, Fanta, Solo, brus, juice, iskaffe = Brus/Godterier, ikke alkohol.
-4. Plastpose, bærepose = Husholdning.
-
-Grupper varene slik:
-- Dagligvarer (mat, melk, brød, egg, grønnsaker, kjøtt, meieri, yoghurt, etc.)
-- Godterier & Snacks (sjokolade, drops, is, potetgull, brus, juice, energidrikk)
-- Alkohol (øl, vin, brennevin, cider — se regel 2)
-- Tobakk/Snus
-- Hygiene/Vaskemidler (sjampo, såpe, vaskemiddel)
-- Husholdning (plastpose, tørkepapir, batterier)
-- Annet
-
-Returner bare kategorier som faktisk finnes. Slå sammen kategorier under 30 kr med nærmeste.
+REGLER:
+- PANT legges til varen rett over (ikke egen linje)
+- Lag én linje per vare med et lesbart navn og foreslå kategori
+- Kategorier å velge mellom: Dagligvarer, Godterier & Snacks, Alkohol, Tobakk/Snus, Hygiene, Husholdning, Klær & Sko, Utemat, Helse, Annet
+- Alkohol: øl, vin, brennevin, cider
+- Brus/juice = Godterier & Snacks
+- Plastpose = Husholdning
 
 {
-  "dato": "<dato i format YYYY-MM-DD. NB: norske kvitteringer bruker DD.MM.YYYY — konverter riktig, f.eks. 12.06.2026 = 2026-06-12. Null hvis ikke synlig.>",
-  "butikk": "<navn på butikk, eller null>",
+  "dato": "<YYYY-MM-DD, norsk format DD.MM.YYYY → konverter riktig. Null hvis ikke synlig.>",
+  "butikk": "<butikknavn eller null>",
   "totalBeløp": <totalt beløp som tall>,
-  "grupper": [
+  "linjer": [
     {
-      "kategoriNavn": "<kategorinavn på norsk>",
-      "beløp": <beløp inkl. pant for denne kategorien, som tall>,
-      "varer": ["<varenavn>", "<varenavn>"]
+      "navn": "<lesbart varenavn, f.eks. 'Havregrynbrød' ikke 'COOP HAVREGR.'>",
+      "beløp": <beløp inkl. evt. pant, som tall>,
+      "kategori": "<foreslått kategori>"
     }
   ]
 }`,

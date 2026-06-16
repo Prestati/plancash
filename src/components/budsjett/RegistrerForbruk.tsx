@@ -5,24 +5,24 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { BudsjettKategori } from "@/lib/budsjett";
 
-interface KvitteringGruppe {
-  kategoriNavn: string;
+interface KvitteringLinje {
+  navn: string;
   beløp: number;
-  varer: string[];
+  kategori: string;
 }
 
 interface ScanResultat {
   dato: string | null;
   butikk: string | null;
   totalBeløp: number;
-  grupper: KvitteringGruppe[];
+  linjer: KvitteringLinje[];
 }
 
-interface GruppeValg {
-  gruppe: KvitteringGruppe;
+interface LinjeValg {
+  navn: string;
+  beløp: number;
   kategoriId: string;
   betaltAv: string;
-  beskrivelse: string;
 }
 
 export default function RegistrerForbruk({
@@ -42,7 +42,7 @@ export default function RegistrerForbruk({
   const [modus, setModus] = useState<"manuell" | "kvittering">("manuell");
   const [skanner, setSkanner] = useState(false);
   const [scanResultat, setScanResultat] = useState<ScanResultat | null>(null);
-  const [gruppeValg, setGruppeValg] = useState<GruppeValg[]>([]);
+  const [linjeValg, setLinjeValg] = useState<LinjeValg[]>([]);
 
   // Manuell-modus state
   const [beløp, setBeløp] = useState("");
@@ -81,7 +81,7 @@ export default function RegistrerForbruk({
   function lukk() {
     setÅpen(false);
     setScanResultat(null);
-    setGruppeValg([]);
+    setLinjeValg([]);
     setBeløp("");
     setBeskrivelse("");
     setKategoriId("");
@@ -111,13 +111,12 @@ export default function RegistrerForbruk({
         setModus("manuell");
       } else {
         setScanResultat(data);
-        // Initialiser gruppevalg med tom kategori per gruppe
-        setGruppeValg(
-          (data.grupper ?? []).map((g: KvitteringGruppe) => ({
-            gruppe: g,
+        setLinjeValg(
+          (data.linjer ?? []).map((l: KvitteringLinje) => ({
+            navn: l.navn,
+            beløp: l.beløp,
             kategoriId: "",
             betaltAv: "felles",
-            beskrivelse: g.kategoriNavn,
           }))
         );
         setDato(data.dato || new Date().toISOString().split("T")[0]);
@@ -126,13 +125,13 @@ export default function RegistrerForbruk({
     reader.readAsDataURL(fil);
   }
 
-  function oppdaterGruppeValg(index: number, felt: "kategoriId" | "betaltAv" | "beskrivelse", verdi: string) {
-    setGruppeValg(prev => prev.map((gv, i) => i === index ? { ...gv, [felt]: verdi } : gv));
+  function oppdaterLinjeValg(index: number, felt: keyof LinjeValg, verdi: string | number) {
+    setLinjeValg(prev => prev.map((lv, i) => i === index ? { ...lv, [felt]: verdi } : lv));
   }
 
   async function lagreKvittering() {
-    if (gruppeValg.some(gv => !gv.kategoriId)) {
-      setFeil("Velg kategori for alle grupper før du lagrer.");
+    if (linjeValg.some(lv => !lv.kategoriId)) {
+      setFeil("Velg kategori for alle linjer før du lagrer.");
       return;
     }
     setLagrer(true);
@@ -140,23 +139,19 @@ export default function RegistrerForbruk({
     const supabase = createClient();
     const lagringsDato = scanResultat?.dato || new Date().toISOString().split("T")[0];
 
-    const inserts = gruppeValg.map(gv => ({
+    const inserts = linjeValg.map(lv => ({
       user_id: userId,
-      kategori: gv.kategoriId,
+      kategori: lv.kategoriId,
       dato: lagringsDato,
-      beløp: gv.gruppe.beløp,
-      beskrivelse: gv.beskrivelse || gv.gruppe.kategoriNavn,
-      betalt_av: gv.betaltAv,
+      beløp: lv.beløp,
+      beskrivelse: lv.navn,
+      betalt_av: lv.betaltAv,
       kilde: "kvittering",
     }));
 
-    const { data: lagretData, error } = await supabase.from("transaksjoner").insert(inserts).select();
-    console.log("Insert transaksjoner:", { lagretData, error });
+    const { error } = await supabase.from("transaksjoner").insert(inserts).select();
     setLagrer(false);
-    if (error) {
-      setFeil("Kunne ikke lagre: " + error.message);
-      return;
-    }
+    if (error) { setFeil("Kunne ikke lagre: " + error.message); return; }
     lukk();
     onLagret?.();
     router.refresh();
@@ -262,12 +257,14 @@ export default function RegistrerForbruk({
         {/* Kvittering-modus: last opp */}
         {modus === "kvittering" && !scanResultat && !skanner && (
           <div
-            className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl"
             style={{ border: "2px dashed var(--border)", background: "var(--background)", position: "relative" }}
           >
-            <span className="text-4xl">🧾</span>
-            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Trykk for å velge bilde</p>
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>Ta bilde med kamera eller velg fra galleri</p>
+            <span className="text-2xl">🧾</span>
+            <div>
+              <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Trykk for å velge bilde</p>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Kamera eller galleri</p>
+            </div>
             <input
               ref={filRef}
               type="file"
@@ -289,106 +286,79 @@ export default function RegistrerForbruk({
           <div className="p-3 rounded-xl text-sm" style={{ background: "var(--red-light)", color: "var(--red)" }}>{feil}</div>
         )}
 
-        {/* Kvittering-resultat: gruppevisning */}
-        {modus === "kvittering" && scanResultat && gruppeValg.length > 0 && (
-          <div className="space-y-3">
+        {/* Kvittering-resultat: linje per produkt */}
+        {modus === "kvittering" && scanResultat && linjeValg.length > 0 && (
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {scanResultat.butikk ?? "Kvittering"}
+                  {scanResultat.butikk ?? "Kvittering"} · {scanResultat.totalBeløp?.toLocaleString("nb-NO")} kr
                 </p>
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  {scanResultat.dato ?? "Ukjent dato"} · Totalt {scanResultat.totalBeløp?.toLocaleString("nb-NO")} kr
-                </p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>{scanResultat.dato ?? ""}</p>
               </div>
-              <div
-                className="text-xs px-3 py-1.5 rounded-lg"
-                style={{ background: "var(--background)", color: "var(--text-muted)", border: "1px solid var(--border)", position: "relative" }}
-              >
+              <div className="text-xs px-3 py-1.5 rounded-lg" style={{ background: "var(--background)", color: "var(--text-muted)", border: "1px solid var(--border)", position: "relative" }}>
                 Bytt bilde
-                <input
-                  ref={filRef}
-                  type="file"
-                  accept="image/*"
+                <input ref={filRef} type="file" accept="image/*"
                   style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
-                  onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
-                />
+                  onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])} />
               </div>
             </div>
 
-            <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-              Velg hvilken budsjett-kategori hver gruppe skal gå på:
-            </p>
+            {/* Header rad */}
+            <div className="grid gap-2 px-1 text-xs font-semibold uppercase tracking-wide" style={{ gridTemplateColumns: "1fr 90px 80px", color: "var(--text-muted)" }}>
+              <span>Vare</span><span>Kategori</span><span className="text-right">Beløp</span>
+            </div>
 
-            {gruppeValg.map((gv, i) => (
-              <div
-                key={i}
-                className="rounded-xl p-4 space-y-3"
-                style={{ background: "var(--background)", border: "1px solid var(--border)" }}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>
-                      {gv.gruppe.varer.join(", ")}
-                    </p>
-                    <input
-                      type="text"
-                      value={gv.beskrivelse}
-                      onChange={(e) => oppdaterGruppeValg(i, "beskrivelse", e.target.value)}
-                      placeholder="Hva gjelder det?"
-                      className="w-full px-2 py-1.5 rounded-lg outline-none"
-                      style={{ ...inputStyle, fontSize: "16px" }}
-                    />
-                  </div>
-                  <span className="text-sm font-bold shrink-0 ml-2" style={{ color: "var(--accent)" }}>
-                    {gv.gruppe.beløp.toLocaleString("nb-NO")} kr
-                  </span>
-                </div>
-
+            {linjeValg.map((lv, i) => (
+              <div key={i} className="grid gap-2 items-center px-3 py-2 rounded-xl" style={{ gridTemplateColumns: "1fr 90px 80px", background: "var(--background)", border: "1px solid var(--border)" }}>
+                <input
+                  type="text"
+                  value={lv.navn}
+                  onChange={(e) => oppdaterLinjeValg(i, "navn", e.target.value)}
+                  className="outline-none bg-transparent truncate"
+                  style={{ fontSize: "15px", color: "var(--text-primary)" }}
+                />
                 <select
-                  value={gv.kategoriId}
-                  onChange={(e) => oppdaterGruppeValg(i, "kategoriId", e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                  style={inputStyle}
+                  value={lv.kategoriId}
+                  onChange={(e) => oppdaterLinjeValg(i, "kategoriId", e.target.value)}
+                  className="outline-none rounded-lg px-1.5 py-1 text-xs"
+                  style={{ ...inputStyle, fontSize: "13px" }}
                 >
-                  <option value="">Velg kategori...</option>
-                  {forbrukKategorier.length > 0 && (
-                    <optgroup label="Forbruk">
-                      {forbrukKategorier.map(k => (
-                        <option key={k.id} value={k.id}>{k.navn}{k.eier && k.eier !== "felles" ? ` (${k.eier})` : ""}</option>
-                      ))}
-                    </optgroup>
-                  )}
-                  {andreKategorier.length > 0 && (
-                    <optgroup label="Andre kategorier">
-                      {andreKategorier.map(k => (
-                        <option key={k.id} value={k.id}>{k.navn}</option>
-                      ))}
-                    </optgroup>
-                  )}
+                  <option value="">–</option>
+                  {forbrukKategorier.map(k => <option key={k.id} value={k.id}>{k.navn}</option>)}
+                  {andreKategorier.map(k => <option key={k.id} value={k.id}>{k.navn}</option>)}
                 </select>
-
-                {betaltAvValg.length > 1 && (
-                  <div className="flex gap-2">
-                    {betaltAvValg.map(p => (
-                      <button
-                        key={p}
-                        onClick={() => oppdaterGruppeValg(i, "betaltAv", p)}
-                        className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all"
-                        style={{
-                          background: gv.betaltAv === p ? "var(--accent)" : "var(--surface)",
-                          color: gv.betaltAv === p ? "white" : "var(--text-secondary)",
-                          border: `1px solid ${gv.betaltAv === p ? "var(--accent)" : "var(--border)"}`,
-                        }}
-                      >
-                        {p === "felles" ? "🏠 Felles" : p}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <input
+                  type="number"
+                  value={lv.beløp}
+                  onChange={(e) => oppdaterLinjeValg(i, "beløp", Number(e.target.value))}
+                  className="text-right outline-none bg-transparent font-semibold"
+                  style={{ fontSize: "14px", color: "var(--accent)" }}
+                />
               </div>
             ))}
 
+            {betaltAvValg.length > 1 && (
+              <div>
+                <p className="text-xs mb-1.5 font-medium" style={{ color: "var(--text-muted)" }}>Hvem betalte?</p>
+                <div className="flex gap-2">
+                  {betaltAvValg.map(p => {
+                    const alleValgt = linjeValg.every(lv => lv.betaltAv === p);
+                    return (
+                      <button key={p}
+                        onClick={() => setLinjeValg(prev => prev.map(lv => ({ ...lv, betaltAv: p })))}
+                        className="flex-1 py-1.5 rounded-lg text-xs font-medium"
+                        style={{
+                          background: alleValgt ? "var(--accent)" : "var(--surface)",
+                          color: alleValgt ? "white" : "var(--text-secondary)",
+                          border: `1px solid ${alleValgt ? "var(--accent)" : "var(--border)"}`,
+                        }}
+                      >{p === "felles" ? "🏠 Felles" : p}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -525,7 +495,7 @@ export default function RegistrerForbruk({
             </button>
           </div>
         )}
-        {modus === "kvittering" && scanResultat && gruppeValg.length > 0 && (
+        {modus === "kvittering" && scanResultat && linjeValg.length > 0 && (
           <div className="px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
             <button
               onClick={lagreKvittering}
@@ -533,7 +503,7 @@ export default function RegistrerForbruk({
               className="w-full py-3.5 rounded-xl font-semibold text-white text-base disabled:opacity-40"
               style={{ background: "var(--accent)" }}
             >
-              {lagrer ? "Lagrer..." : `Lagre ${gruppeValg.length} poster →`}
+              {lagrer ? "Lagrer..." : `Lagre ${linjeValg.length} poster →`}
             </button>
           </div>
         )}
