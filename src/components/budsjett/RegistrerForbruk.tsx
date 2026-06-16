@@ -22,6 +22,7 @@ interface GruppeValg {
   gruppe: KvitteringGruppe;
   kategoriId: string;
   betaltAv: string;
+  beskrivelse: string;
 }
 
 export default function RegistrerForbruk({
@@ -116,6 +117,7 @@ export default function RegistrerForbruk({
             gruppe: g,
             kategoriId: "",
             betaltAv: "felles",
+            beskrivelse: g.kategoriNavn,
           }))
         );
         setDato(data.dato || new Date().toISOString().split("T")[0]);
@@ -124,7 +126,7 @@ export default function RegistrerForbruk({
     reader.readAsDataURL(fil);
   }
 
-  function oppdaterGruppeValg(index: number, felt: "kategoriId" | "betaltAv", verdi: string) {
+  function oppdaterGruppeValg(index: number, felt: "kategoriId" | "betaltAv" | "beskrivelse", verdi: string) {
     setGruppeValg(prev => prev.map((gv, i) => i === index ? { ...gv, [felt]: verdi } : gv));
   }
 
@@ -143,7 +145,7 @@ export default function RegistrerForbruk({
       kategori: gv.kategoriId,
       dato: lagringsDato,
       beløp: gv.gruppe.beløp,
-      beskrivelse: `${scanResultat?.butikk ? scanResultat.butikk + ": " : ""}${gv.gruppe.kategoriNavn}`,
+      beskrivelse: gv.beskrivelse || gv.gruppe.kategoriNavn,
       betalt_av: gv.betaltAv,
       kilde: "kvittering",
     }));
@@ -299,19 +301,19 @@ export default function RegistrerForbruk({
                   {scanResultat.dato ?? "Ukjent dato"} · Totalt {scanResultat.totalBeløp?.toLocaleString("nb-NO")} kr
                 </p>
               </div>
-              <label
-                className="text-xs px-3 py-1.5 rounded-lg cursor-pointer"
-                style={{ background: "var(--background)", color: "var(--text-muted)", border: "1px solid var(--border)" }}
+              <div
+                className="text-xs px-3 py-1.5 rounded-lg"
+                style={{ background: "var(--background)", color: "var(--text-muted)", border: "1px solid var(--border)", position: "relative" }}
               >
                 Bytt bilde
                 <input
                   ref={filRef}
                   type="file"
                   accept="image/*"
-                  style={{ position: "absolute", width: "1px", height: "1px", opacity: 0 }}
+                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
                   onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
                 />
-              </label>
+              </div>
             </div>
 
             <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
@@ -325,15 +327,20 @@ export default function RegistrerForbruk({
                 style={{ background: "var(--background)", border: "1px solid var(--border)" }}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                      {gv.gruppe.kategoriNavn}
-                    </p>
-                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs mb-1" style={{ color: "var(--text-muted)" }}>
                       {gv.gruppe.varer.join(", ")}
                     </p>
+                    <input
+                      type="text"
+                      value={gv.beskrivelse}
+                      onChange={(e) => oppdaterGruppeValg(i, "beskrivelse", e.target.value)}
+                      placeholder="Hva gjelder det?"
+                      className="w-full px-2 py-1.5 rounded-lg outline-none"
+                      style={{ ...inputStyle, fontSize: "16px" }}
+                    />
                   </div>
-                  <span className="text-sm font-bold shrink-0" style={{ color: "var(--accent)" }}>
+                  <span className="text-sm font-bold shrink-0 ml-2" style={{ color: "var(--accent)" }}>
                     {gv.gruppe.beløp.toLocaleString("nb-NO")} kr
                   </span>
                 </div>
