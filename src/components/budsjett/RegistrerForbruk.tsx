@@ -187,6 +187,7 @@ export default function RegistrerForbruk({
     background: "var(--background)",
     border: "1px solid var(--border)",
     color: "var(--text-primary)",
+    fontSize: "16px", // hindrer iOS fra å zoome inn på focus
   };
 
   if (!åpen) {
@@ -210,22 +211,25 @@ export default function RegistrerForbruk({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4" style={{ background: "rgba(42,31,20,0.5)" }}>
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" style={{ background: "rgba(42,31,20,0.5)" }}>
       <div
-        className="w-full max-w-md rounded-2xl p-6 space-y-4"
+        className="w-full max-w-md rounded-t-2xl md:rounded-2xl flex flex-col"
         style={{
           background: "var(--surface)",
           border: "1px solid var(--border)",
-          maxHeight: "90vh",
-          overflowY: "auto",
+          maxHeight: "92dvh",
         }}
       >
-        <div className="flex items-center justify-between">
+        {/* Header — fast */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 shrink-0">
           <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-lora)", color: "var(--text-primary)" }}>
             Registrer forbruk
           </h2>
           <button onClick={lukk} className="text-xl leading-none" style={{ color: "var(--text-muted)" }}>✕</button>
         </div>
+
+        {/* Scrollbart innhold */}
+        <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-4">
 
         {/* Modus-tabs */}
         <div className="flex gap-2 p-1 rounded-xl" style={{ background: "var(--background)" }}>
@@ -255,10 +259,9 @@ export default function RegistrerForbruk({
 
         {/* Kvittering-modus: last opp */}
         {modus === "kvittering" && !scanResultat && !skanner && (
-          <div
-            onClick={() => filRef.current?.click()}
+          <label
             className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer"
-            style={{ border: "2px dashed var(--border)", background: "var(--background)" }}
+            style={{ border: "2px dashed var(--border)", background: "var(--background)", display: "flex" }}
           >
             <span className="text-4xl">🧾</span>
             <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Trykk for å velge bilde</p>
@@ -267,11 +270,10 @@ export default function RegistrerForbruk({
               ref={filRef}
               type="file"
               accept="image/*"
-              capture="environment"
-              className="hidden"
+              style={{ position: "absolute", width: "1px", height: "1px", opacity: 0 }}
               onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
             />
-          </div>
+          </label>
         )}
 
         {skanner && (
@@ -297,21 +299,19 @@ export default function RegistrerForbruk({
                   {scanResultat.dato ?? "Ukjent dato"} · Totalt {scanResultat.totalBeløp?.toLocaleString("nb-NO")} kr
                 </p>
               </div>
-              <button
-                onClick={() => filRef.current?.click()}
-                className="text-xs px-3 py-1.5 rounded-lg"
+              <label
+                className="text-xs px-3 py-1.5 rounded-lg cursor-pointer"
                 style={{ background: "var(--background)", color: "var(--text-muted)", border: "1px solid var(--border)" }}
               >
                 Bytt bilde
-              </button>
-              <input
-                ref={filRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
-              />
+                <input
+                  ref={filRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ position: "absolute", width: "1px", height: "1px", opacity: 0 }}
+                  onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
+                />
+              </label>
             </div>
 
             <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
@@ -382,14 +382,6 @@ export default function RegistrerForbruk({
               </div>
             ))}
 
-            <button
-              onClick={lagreKvittering}
-              disabled={gruppeValg.some(gv => !gv.kategoriId) || lagrer}
-              className="w-full py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-40"
-              style={{ background: "var(--accent)" }}
-            >
-              {lagrer ? "Lagrer..." : `Lagre ${gruppeValg.length} poster →`}
-            </button>
           </div>
         )}
 
@@ -508,13 +500,33 @@ export default function RegistrerForbruk({
               </div>
             </div>
 
+          </div>
+        )}
+
+        </div>{/* slutt scrollbart innhold */}
+
+        {/* Sticky lagre-knapp */}
+        {modus === "manuell" && (
+          <div className="px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
             <button
               onClick={lagreManuell}
               disabled={!beløp || !kategoriId || lagrer}
-              className="w-full py-3 rounded-xl font-semibold text-white text-sm disabled:opacity-40"
+              className="w-full py-3.5 rounded-xl font-semibold text-white text-base disabled:opacity-40"
               style={{ background: "var(--accent)" }}
             >
               {lagrer ? "Lagrer..." : "Lagre →"}
+            </button>
+          </div>
+        )}
+        {modus === "kvittering" && scanResultat && gruppeValg.length > 0 && (
+          <div className="px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
+            <button
+              onClick={lagreKvittering}
+              disabled={gruppeValg.some(gv => !gv.kategoriId) || lagrer}
+              className="w-full py-3.5 rounded-xl font-semibold text-white text-base disabled:opacity-40"
+              style={{ background: "var(--accent)" }}
+            >
+              {lagrer ? "Lagrer..." : `Lagre ${gruppeValg.length} poster →`}
             </button>
           </div>
         )}
