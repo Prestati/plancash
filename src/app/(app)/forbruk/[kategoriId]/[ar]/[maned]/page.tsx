@@ -4,6 +4,7 @@ import { MÅNEDER } from "@/lib/budsjett";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import ForbrukAiInnsikt from "@/components/budsjett/ForbrukAiInnsikt";
+import ForbrukTransaksjonsListe from "@/components/budsjett/ForbrukTransaksjonsListe";
 
 export default async function ForbrukDetaljPage({
   params,
@@ -38,19 +39,6 @@ export default async function ForbrukDetaljPage({
   ]);
 
   const total = (transaksjoner ?? []).reduce((s, t) => s + t.beløp, 0);
-
-  // Grupper beskrivelser for innsikt
-  const beskrivelseFrekvens: Record<string, number> = {};
-  for (const t of transaksjoner ?? []) {
-    if (t.beskrivelse) {
-      const nøkkel = t.beskrivelse.toLowerCase().trim();
-      beskrivelseFrekvens[nøkkel] = (beskrivelseFrekvens[nøkkel] ?? 0) + 1;
-    }
-  }
-  const hyppige = Object.entries(beskrivelseFrekvens)
-    .filter(([, antall]) => antall > 1)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
 
   return (
     <div className="max-w-2xl">
@@ -101,63 +89,8 @@ export default async function ForbrukDetaljPage({
         />
       )}
 
-      {/* Transaksjonsliste */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-        <div
-          className="px-5 py-3 text-xs font-semibold uppercase tracking-wider grid"
-          style={{
-            gridTemplateColumns: "1fr 120px 100px",
-            background: "var(--background)",
-            color: "var(--text-muted)",
-            borderBottom: "1px solid var(--border)",
-          }}
-        >
-          <div>Beskrivelse</div>
-          <div>Hvem</div>
-          <div className="text-right">Beløp</div>
-        </div>
-
-        {(transaksjoner ?? []).length === 0 && (
-          <div className="px-5 py-8 text-center text-sm" style={{ color: "var(--text-muted)" }}>
-            Ingen registrerte poster
-          </div>
-        )}
-
-        {(transaksjoner ?? []).map((t, idx) => (
-          <div
-            key={t.id}
-            className="grid items-center px-5 py-3.5"
-            style={{
-              gridTemplateColumns: "1fr 120px 100px",
-              borderBottom: idx < (transaksjoner?.length ?? 0) - 1 ? "1px solid var(--border)" : "none",
-            }}
-          >
-            <div>
-              <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                {t.beskrivelse || <span style={{ color: "var(--text-muted)" }}>—</span>}
-              </p>
-              <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
-                {new Date(t.dato).toLocaleDateString("nb-NO", { day: "numeric", month: "long" })}
-              </p>
-            </div>
-            <div>
-              {t.betalt_av && t.betalt_av !== "felles" ? (
-                <span
-                  className="text-xs px-2 py-1 rounded-full font-medium"
-                  style={{ background: "var(--accent-light)", color: "var(--accent)" }}
-                >
-                  {t.betalt_av}
-                </span>
-              ) : (
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>Felles</span>
-              )}
-            </div>
-            <div className="text-right font-semibold text-sm" style={{ color: "var(--red)" }}>
-              {t.beløp.toLocaleString("nb-NO")} kr
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Transaksjonsliste — redigerbar */}
+      <ForbrukTransaksjonsListe transaksjoner={transaksjoner ?? []} />
     </div>
   );
 }
