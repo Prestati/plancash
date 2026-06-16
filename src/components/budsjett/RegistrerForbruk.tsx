@@ -259,9 +259,9 @@ export default function RegistrerForbruk({
 
         {/* Kvittering-modus: last opp */}
         {modus === "kvittering" && !scanResultat && !skanner && (
-          <label
-            className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer"
-            style={{ border: "2px dashed var(--border)", background: "var(--background)", display: "flex" }}
+          <div
+            className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl"
+            style={{ border: "2px dashed var(--border)", background: "var(--background)", position: "relative" }}
           >
             <span className="text-4xl">🧾</span>
             <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>Trykk for å velge bilde</p>
@@ -270,10 +270,10 @@ export default function RegistrerForbruk({
               ref={filRef}
               type="file"
               accept="image/*"
-              style={{ position: "absolute", width: "1px", height: "1px", opacity: 0 }}
+              style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
               onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
             />
-          </label>
+          </div>
         )}
 
         {skanner && (
