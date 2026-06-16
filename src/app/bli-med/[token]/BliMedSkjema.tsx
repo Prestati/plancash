@@ -27,11 +27,18 @@ export default function BliMedSkjema({ token, epost }: { token: string; epost: s
     }
 
     // Aksepter invitasjonen via API
-    await fetch(`/api/aksepter-invitasjon`, {
+    const aksepterRes = await fetch(`/api/aksepter-invitasjon`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
     });
+
+    if (!aksepterRes.ok) {
+      const json = await aksepterRes.json().catch(() => ({}));
+      setError(json.feil ?? "Kunne ikke koble deg til husholdet. Be om en ny invitasjonslenke.");
+      setLoading(false);
+      return;
+    }
 
     router.push("/dashboard");
   }
