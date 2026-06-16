@@ -122,10 +122,9 @@ export default function ScanKvittering({
 
         {/* Bildeopplasting */}
         {!resultat && !skanner && (
-          <div
-            onClick={() => filRef.current?.click()}
+          <label
             className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all"
-            style={{ border: "2px dashed var(--border)", background: "var(--background)" }}
+            style={{ border: "2px dashed var(--border)", background: "var(--background)", display: "flex" }}
           >
             <span className="text-4xl">🧾</span>
             <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
@@ -138,10 +137,10 @@ export default function ScanKvittering({
               ref={filRef}
               type="file"
               accept="image/*"
-              className="hidden"
+              style={{ position: "absolute", width: "1px", height: "1px", opacity: 0, overflow: "hidden" }}
               onChange={(e) => e.target.files?.[0] && håndterBilde(e.target.files[0])}
             />
-          </div>
+          </label>
         )}
 
         {skanner && (
