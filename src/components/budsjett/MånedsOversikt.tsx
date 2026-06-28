@@ -105,7 +105,8 @@ export default function MånedsOversikt({
 
   const antallBetalt = fasteKategorier.filter(k => erBetalt(k)).length;
   const gjenstår = fasteKategorier.length - antallBetalt;
-  const totalTransaksjoner = transaksjoner.reduce((s, t) => s + t.beløp, 0);
+  const pengerInn = transaksjoner.filter(t => t.kilde === "inn").reduce((s, t) => s + t.beløp, 0);
+  const totalTransaksjoner = transaksjoner.filter(t => t.kilde !== "inn").reduce((s, t) => s + t.beløp, 0);
   const inntektKategorier = kategorier.filter(k => k.type === "inntekt" && k.aktiv);
   const ubekreftedInntekt = inntektKategorier.filter(k => !erBetalt(k));
   const totalInntekt = inntektKategorier.reduce((s, k) => {
@@ -113,7 +114,7 @@ export default function MånedsOversikt({
     return s + (override ? override.belop : k.standard_beløp);
   }, 0);
   const totalFaste = fasteKategorier.reduce((s, k) => s + beløpForPost(k), 0);
-  const tilOvers = totalInntekt - totalFaste - totalTransaksjoner;
+  const tilOvers = totalInntekt + pengerInn - totalFaste - totalTransaksjoner;
 
   const sparingKategorier = kategorier.filter(k => k.type === "sparing" && k.aktiv);
   const totalSparing = sparingKategorier.reduce((s, k) => {
@@ -121,7 +122,7 @@ export default function MånedsOversikt({
     return s + (override ? override.belop : k.standard_beløp);
   }, 0);
   const totalBetalteFaste = fasteKategorier.filter(k => erBetalt(k)).reduce((s, k) => s + beløpForPost(k), 0);
-  const totalBrukt = totalBetalteFaste + totalTransaksjoner;
+  const totalBrukt = totalBetalteFaste + totalTransaksjoner; // ekskl. penger inn
 
   const ubetalteFaste = fasteKategorier.filter(k => !erBetalt(k));
   const totalInntektBekreftet = inntektKategorier.filter(k => erBetalt(k)).reduce((s, k) => s + beløpForPost(k), 0);
@@ -177,8 +178,17 @@ export default function MånedsOversikt({
           verdi={`${totalBrukt.toLocaleString("nb-NO")}`}
           label="Totalt brukt"
           farge="var(--red)"
-          detalj={`regninger + forbruk`}
+          detalj="regninger + forbruk"
         />
+        {pengerInn > 0 && (
+          <StatKort
+            ikon="💚"
+            verdi={`+${pengerInn.toLocaleString("nb-NO")}`}
+            label="Penger inn"
+            farge="var(--green)"
+            detalj="registrerte innbetalinger"
+          />
+        )}
         {sparingKategorier.length > 0 && (
           <StatKort
             ikon="🐷"

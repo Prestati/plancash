@@ -86,7 +86,7 @@ export default function RegistrerForbruk({
       user_id: userId,
       kategori: kategoriId || null,
       dato,
-      beløp: -Math.abs(Number(beløp)), // negativt = penger inn
+      beløp: Math.abs(Number(beløp)), // positivt — kilde:"inn" skiller det fra utgifter
       beskrivelse: beskrivelse || null,
       betalt_av: betaltAv,
       kilde: "inn",
