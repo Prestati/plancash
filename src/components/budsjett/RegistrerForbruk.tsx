@@ -231,7 +231,7 @@ export default function RegistrerForbruk({
         {/* Modus-tabs */}
         <div className="flex gap-2 p-1 rounded-xl" style={{ background: "var(--background)" }}>
           <button
-            onClick={() => { setModus("manuell"); setScanResultat(null); setGruppeValg([]); }}
+            onClick={() => { setModus("manuell"); setScanResultat(null); setLinjeValg([]); }}
             className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
             style={{
               background: modus === "manuell" ? "var(--surface)" : "transparent",
@@ -499,7 +499,7 @@ export default function RegistrerForbruk({
           <div className="px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
             <button
               onClick={lagreKvittering}
-              disabled={gruppeValg.some(gv => !gv.kategoriId) || lagrer}
+              disabled={linjeValg.some(lv => !lv.kategoriId) || lagrer}
               className="w-full py-3.5 rounded-xl font-semibold text-white text-base disabled:opacity-40"
               style={{ background: "var(--accent)" }}
             >

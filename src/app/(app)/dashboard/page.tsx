@@ -21,7 +21,7 @@ export default async function DashboardPage() {
     .eq("aktiv", true)
     .limit(1);
 
-  if (!harKategorier.data?.length) redirect("/budsjett");
+  if (!harKategorier.data?.length) redirect("/velkommen");
 
   const [{ data: kategorier }, { data: avvik }, { data: transaksjoner }, { data: profil }] = await Promise.all([
     supabase.from("budsjett_kategorier").select("*").eq("user_id", dataUserId).eq("aktiv", true).order("type").order("sortering"),
