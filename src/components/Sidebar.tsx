@@ -11,6 +11,7 @@ const modules = [
   { name: "Forbrukslogg", href: "/forbruk", icon: "🛒", active: true },
   { name: "Budsjettoppsett", href: "/budsjett", icon: "📋", active: true },
   { name: "Plancash", href: "/plancash", icon: "₪", active: true },
+  { name: "Gjeldsplan", href: "/gjeld", icon: "💳", active: true, beta: true },
   { name: "Plandish", href: "https://www.plandish.no", icon: "🛒", active: true, extern: true },
 ];
 
@@ -75,6 +76,9 @@ export default function Sidebar({ user }: { user: User }) {
             >
               <span className="text-base">{mod.icon}</span>
               <span>{mod.name}</span>
+              {"beta" in mod && mod.beta && (
+                <span className="ml-1 text-[9px] font-bold px-1 py-0.5 rounded" style={{ background: "var(--amber)", color: "white" }}>BETA</span>
+              )}
               {mod.extern && (
                 <span className="ml-auto text-xs" style={{ color: "var(--text-muted)" }}>↗</span>
               )}

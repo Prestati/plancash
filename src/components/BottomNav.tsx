@@ -7,7 +7,7 @@ const nav = [
   { href: "/dashboard", icon: "⌂", label: "Hjem" },
   { href: "/forbruk", icon: "🛒", label: "Forbruk" },
   { href: "/budsjett", icon: "📋", label: "Budsjett" },
-  { href: "/plancash", icon: "₪", label: "Oversikt" },
+  { href: "/gjeld", icon: "💳", label: "Gjeld", beta: true },
   { href: "/oppsett", icon: "⚙", label: "Innst." },
 ];
 
@@ -37,7 +37,12 @@ export default function BottomNav() {
             }}
           >
             <span className="text-xl leading-none">{item.icon}</span>
-            <span className="text-xs leading-none">{item.label}</span>
+            <span className="text-xs leading-none flex items-center gap-0.5">
+              {item.label}
+              {"beta" in item && item.beta && (
+                <span className="text-[8px] font-bold px-0.5 rounded" style={{ background: "var(--amber)", color: "white", lineHeight: "1.2" }}>β</span>
+              )}
+            </span>
             {aktiv && (
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full" style={{ background: "var(--accent)" }} />
             )}
