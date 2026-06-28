@@ -82,16 +82,20 @@ export default function RegistrerForbruk({
     if (!beløp) return;
     setLagrer(true);
     const supabase = createClient();
-    await supabase.from("transaksjoner").insert({
+    const { error } = await supabase.from("transaksjoner").insert({
       user_id: userId,
       kategori: kategoriId || null,
       dato,
-      beløp: Math.abs(Number(beløp)), // positivt — kilde:"inn" skiller det fra utgifter
+      beløp: Math.abs(Number(beløp)),
       beskrivelse: beskrivelse || null,
       betalt_av: betaltAv,
       kilde: "inn",
     });
     setLagrer(false);
+    if (error) {
+      setFeil(`Feil ved lagring: ${error.message}`);
+      return;
+    }
     lukk();
     onLagret?.();
     router.refresh();
