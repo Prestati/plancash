@@ -234,7 +234,8 @@ export default function RegistrerForbruk({
         style={{
           background: "var(--surface)",
           border: "1px solid var(--border)",
-          maxHeight: "88vh",
+          maxHeight: "calc(100vh - 80px)", // 80px = bunn-nav høyde
+          marginBottom: "0px",
         }}
       >
         {/* Header — fast */}
