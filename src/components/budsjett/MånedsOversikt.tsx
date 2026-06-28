@@ -116,8 +116,6 @@ export default function MånedsOversikt({
     return s + (override ? override.belop : k.standard_beløp);
   }, 0);
   const totalFaste = fasteKategorier.reduce((s, k) => s + beløpForPost(k), 0);
-  const tilOvers = totalInntekt + pengerInn - totalFaste - totalTransaksjoner;
-
   const sparingKategorier = kategorier.filter(k => k.type === "sparing" && k.aktiv);
   const totalSparing = sparingKategorier.reduce((s, k) => {
     const override = månedAvvik.find(a => a.kategori_id === k.id);
@@ -125,6 +123,7 @@ export default function MånedsOversikt({
   }, 0);
   const totalBetalteFaste = fasteKategorier.filter(k => erBetalt(k)).reduce((s, k) => s + beløpForPost(k), 0);
   const totalBrukt = totalBetalteFaste + totalTransaksjoner; // ekskl. penger inn
+  const tilOvers = totalInntekt + pengerInn - totalBrukt;
 
   const ubetalteFaste = fasteKategorier.filter(k => !erBetalt(k));
   const totalInntektBekreftet = inntektKategorier.filter(k => erBetalt(k)).reduce((s, k) => s + beløpForPost(k), 0);
