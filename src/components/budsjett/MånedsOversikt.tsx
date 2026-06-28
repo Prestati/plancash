@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { MÅNEDER, type BudsjettKategori, type BudsjettMåned } from "@/lib/budsjett";
 import RegistrerForbruk from "./RegistrerForbruk";
 import AiInnsikt from "./AiInnsikt";
+import AiChat from "./AiChat";
 
 const FASTE_TYPER = ["fast", "gjeld", "abonnement"] as const;
 
@@ -207,6 +208,9 @@ export default function MånedsOversikt({
           detalj={`${totalTransaksjoner.toLocaleString("nb-NO")} kr`}
         />
       </div>
+
+      {/* AI-chat */}
+      <AiChat navn={brukernavn} />
 
       {/* AI-innsikt */}
       <AiInnsikt
