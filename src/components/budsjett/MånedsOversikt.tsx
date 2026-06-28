@@ -41,6 +41,7 @@ export default function MånedsOversikt({
   const [visFaste, setVisFaste] = useState(false);
   const [visBetalte, setVisBetalte] = useState(false);
   const [visTransaksjoner, setVisTransaksjoner] = useState(false);
+  const [visPengerInn, setVisPengerInn] = useState(false);
 
   const fasteKategorier = kategorier.filter(k =>
     FASTE_TYPER.includes(k.type as typeof FASTE_TYPER[number]) && k.aktiv
@@ -330,12 +331,52 @@ export default function MånedsOversikt({
         </div>
       )}
 
+      {/* Penger inn */}
+      {pengerInn > 0 && (
+        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--green)" }}>
+          <button
+            className="w-full flex items-center justify-between px-5 py-4"
+            onClick={() => setVisPengerInn(!visPengerInn)}
+            style={{ borderBottom: visPengerInn ? "1px solid var(--border)" : "none" }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: "var(--green-light)", color: "var(--green)" }}>💚</div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: "var(--green)" }}>Penger inn</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  +{pengerInn.toLocaleString("nb-NO")} kr mottatt denne måneden
+                </p>
+              </div>
+            </div>
+            <span style={{ color: "var(--text-muted)" }}>{visPengerInn ? "▲" : "▼"}</span>
+          </button>
+          {visPengerInn && transaksjoner.filter(t => t.kilde === "inn").map((t, idx, arr) => (
+            <div key={t.id} className="flex items-center gap-3 px-5 py-3"
+              style={{ borderBottom: idx < arr.length - 1 ? "1px solid var(--border)" : "none", background: "var(--green-light)" }}>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
+                  {t.beskrivelse || "Innbetaling"}
+                </p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {t.dato}{t.betalt_av && t.betalt_av !== "felles" ? ` · fra ${t.betalt_av}` : ""}
+                  {t.kategori ? ` · ${kategoriNavn(t.kategori)}` : ""}
+                </p>
+              </div>
+              <span className="text-sm font-semibold shrink-0" style={{ color: "var(--green)" }}>
+                +{t.beløp.toLocaleString("nb-NO")} kr
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Transaksjoner */}
       <div className="rounded-2xl overflow-hidden" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
         <button
           className="w-full flex items-center justify-between px-5 py-4"
           onClick={() => setVisTransaksjoner(!visTransaksjoner)}
-          style={{ borderBottom: visTransaksjoner && transaksjoner.length > 0 ? "1px solid var(--border)" : "none" }}
+          style={{ borderBottom: visTransaksjoner && transaksjoner.filter(t => t.kilde !== "inn").length > 0 ? "1px solid var(--border)" : "none" }}
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -343,15 +384,15 @@ export default function MånedsOversikt({
             <div className="text-left">
               <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>Registrert forbruk</p>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                {transaksjoner.length === 0 ? "Ingen ennå — scan en kvittering!" : `${totalTransaksjoner.toLocaleString("nb-NO")} kr totalt`}
+                {totalTransaksjoner === 0 ? "Ingen ennå — scan en kvittering!" : `${totalTransaksjoner.toLocaleString("nb-NO")} kr totalt`}
               </p>
             </div>
           </div>
-          {transaksjoner.length > 0 && <span style={{ color: "var(--text-muted)" }}>{visTransaksjoner ? "▲" : "▼"}</span>}
+          {totalTransaksjoner > 0 && <span style={{ color: "var(--text-muted)" }}>{visTransaksjoner ? "▲" : "▼"}</span>}
         </button>
-        {visTransaksjoner && transaksjoner.map((t, idx) => (
+        {visTransaksjoner && transaksjoner.filter(t => t.kilde !== "inn").map((t, idx, arr) => (
           <div key={t.id} className="flex items-center gap-3 px-5 py-3"
-            style={{ borderBottom: idx < transaksjoner.length - 1 ? "1px solid var(--border)" : "none" }}>
+            style={{ borderBottom: idx < arr.length - 1 ? "1px solid var(--border)" : "none" }}>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
                 {t.beskrivelse || kategoriNavn(t.kategori)}
@@ -361,8 +402,8 @@ export default function MånedsOversikt({
                 {t.betalt_av && t.betalt_av !== "felles" ? ` · ${t.betalt_av}` : ""}
               </p>
             </div>
-            <span className="text-sm font-semibold shrink-0" style={{ color: t.kilde === "inn" ? "var(--green)" : "var(--red)" }}>
-              {t.kilde === "inn" ? "+" : ""}{Math.abs(t.beløp).toLocaleString("nb-NO")} kr
+            <span className="text-sm font-semibold shrink-0" style={{ color: "var(--red)" }}>
+              {t.beløp.toLocaleString("nb-NO")} kr
             </span>
           </div>
         ))}
