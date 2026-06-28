@@ -363,9 +363,12 @@ export default function MånedsOversikt({
                   {t.kategori ? ` · ${kategoriNavn(t.kategori)}` : ""}
                 </p>
               </div>
-              <span className="text-sm font-semibold shrink-0" style={{ color: "var(--green)" }}>
+              <span className="text-sm font-semibold shrink-0 mr-2" style={{ color: "var(--green)" }}>
                 +{t.beløp.toLocaleString("nb-NO")} kr
               </span>
+              <button onClick={() => slettTransaksjon(t.id)}
+                className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs"
+                style={{ background: "var(--red)", color: "white", opacity: 0.7 }}>✕</button>
             </div>
           ))}
         </div>
@@ -402,9 +405,12 @@ export default function MånedsOversikt({
                 {t.betalt_av && t.betalt_av !== "felles" ? ` · ${t.betalt_av}` : ""}
               </p>
             </div>
-            <span className="text-sm font-semibold shrink-0" style={{ color: "var(--red)" }}>
+            <span className="text-sm font-semibold shrink-0 mr-2" style={{ color: "var(--red)" }}>
               {t.beløp.toLocaleString("nb-NO")} kr
             </span>
+            <button onClick={() => slettTransaksjon(t.id)}
+              className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs"
+              style={{ background: "var(--red)", color: "white", opacity: 0.7 }}>✕</button>
           </div>
         ))}
       </div>
