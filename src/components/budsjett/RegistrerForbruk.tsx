@@ -34,7 +34,7 @@ export default function RegistrerForbruk({
 }: {
   userId: string;
   kategorier: BudsjettKategori[];
-  onLagret?: () => void;
+  onLagret?: () => Promise<void> | void;
   variant?: "standard" | "hvit";
   stor?: boolean;
 }) {
@@ -96,9 +96,8 @@ export default function RegistrerForbruk({
       setFeil(`Feil ved lagring: ${error.message}`);
       return;
     }
+    await onLagret?.();
     lukk();
-    onLagret?.();
-    router.refresh();
   }
 
   function lukk() {
@@ -175,9 +174,8 @@ export default function RegistrerForbruk({
     const { error } = await supabase.from("transaksjoner").insert(inserts).select();
     setLagrer(false);
     if (error) { setFeil("Kunne ikke lagre: " + error.message); return; }
+    await onLagret?.();
     lukk();
-    onLagret?.();
-    router.refresh();
   }
 
   async function lagreManuell() {
@@ -198,9 +196,8 @@ export default function RegistrerForbruk({
       setFeil("Kunne ikke lagre: " + error.message);
       return;
     }
+    await onLagret?.();
     lukk();
-    onLagret?.();
-    router.refresh();
   }
 
   const inputStyle = {
