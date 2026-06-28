@@ -351,8 +351,8 @@ export default function MånedsOversikt({
                 {t.betalt_av && t.betalt_av !== "felles" ? ` · ${t.betalt_av}` : ""}
               </p>
             </div>
-            <span className="text-sm font-semibold shrink-0" style={{ color: "var(--red)" }}>
-              {t.beløp.toLocaleString("nb-NO")} kr
+            <span className="text-sm font-semibold shrink-0" style={{ color: t.kilde === "inn" ? "var(--green)" : "var(--red)" }}>
+              {t.kilde === "inn" ? "+" : ""}{Math.abs(t.beløp).toLocaleString("nb-NO")} kr
             </span>
           </div>
         ))}

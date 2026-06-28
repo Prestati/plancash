@@ -215,10 +215,25 @@ export default function BudsjettOppsett({
                 borderBottom: idx < kategorierForType.length - 1 ? "1px solid var(--border)" : "none",
               }}
             >
-              <div>
-                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{k.navn}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <input
+                  type="text"
+                  defaultValue={k.navn}
+                  key={k.id + "-navn"}
+                  onBlur={async (e) => {
+                    const nyttNavn = e.target.value.trim();
+                    if (!nyttNavn || nyttNavn === k.navn) return;
+                    const supabase = createClient();
+                    await supabase.from("budsjett_kategorier").update({ navn: nyttNavn }).eq("id", k.id);
+                    setKategorier(prev => prev.map(x => x.id === k.id ? { ...x, navn: nyttNavn } : x));
+                  }}
+                  className="text-sm font-medium outline-none bg-transparent border-b border-transparent hover:border-dashed focus:border-solid truncate"
+                  style={{ color: "var(--text-primary)", borderColor: "transparent", maxWidth: "160px" }}
+                  onFocus={e => (e.target.style.borderColor = "var(--accent)")}
+                  onBlurCapture={e => (e.currentTarget.style.borderColor = "transparent")}
+                />
                 {k.konto && (
-                  <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--border)", color: "var(--text-muted)" }}>
+                  <span className="text-xs px-2 py-0.5 rounded-full shrink-0" style={{ background: "var(--border)", color: "var(--text-muted)" }}>
                     {k.konto}
                   </span>
                 )}

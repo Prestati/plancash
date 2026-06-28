@@ -39,7 +39,7 @@ export default function RegistrerForbruk({
   stor?: boolean;
 }) {
   const [åpen, setÅpen] = useState(false);
-  const [modus, setModus] = useState<"manuell" | "kvittering">("manuell");
+  const [modus, setModus] = useState<"manuell" | "kvittering" | "inn">("manuell");
   const [skanner, setSkanner] = useState(false);
   const [scanResultat, setScanResultat] = useState<ScanResultat | null>(null);
   const [linjeValg, setLinjeValg] = useState<LinjeValg[]>([]);
@@ -76,6 +76,25 @@ export default function RegistrerForbruk({
       .eq("id", valgtKategori.id);
     setLagtTilBudsjett(true);
     setLeggerTilBudsjett(false);
+  }
+
+  async function lagreInn() {
+    if (!beløp) return;
+    setLagrer(true);
+    const supabase = createClient();
+    await supabase.from("transaksjoner").insert({
+      user_id: userId,
+      kategori: kategoriId || null,
+      dato,
+      beløp: -Math.abs(Number(beløp)), // negativt = penger inn
+      beskrivelse: beskrivelse || null,
+      betalt_av: betaltAv,
+      kilde: "inn",
+    });
+    setLagrer(false);
+    lukk();
+    onLagret?.();
+    router.refresh();
   }
 
   function lukk() {
@@ -229,30 +248,74 @@ export default function RegistrerForbruk({
         <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-4">
 
         {/* Modus-tabs */}
-        <div className="flex gap-2 p-1 rounded-xl" style={{ background: "var(--background)" }}>
-          <button
-            onClick={() => { setModus("manuell"); setScanResultat(null); setLinjeValg([]); }}
-            className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
-            style={{
-              background: modus === "manuell" ? "var(--surface)" : "transparent",
-              color: modus === "manuell" ? "var(--accent)" : "var(--text-muted)",
-              boxShadow: modus === "manuell" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
-            }}
-          >
-            ✏️ Logg manuelt
-          </button>
-          <button
-            onClick={() => setModus("kvittering")}
-            className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
-            style={{
-              background: modus === "kvittering" ? "var(--surface)" : "transparent",
-              color: modus === "kvittering" ? "var(--accent)" : "var(--text-muted)",
-              boxShadow: modus === "kvittering" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
-            }}
-          >
-            📷 Last opp kvittering
-          </button>
+        <div className="flex gap-1 p-1 rounded-xl" style={{ background: "var(--background)" }}>
+          {([
+            { id: "manuell", label: "✏️ Utgift" },
+            { id: "inn", label: "💚 Penger inn" },
+            { id: "kvittering", label: "📷 Kvittering" },
+          ] as const).map(tab => (
+            <button key={tab.id}
+              onClick={() => { setModus(tab.id); setScanResultat(null); setLinjeValg([]); }}
+              className="flex-1 py-2 rounded-lg text-xs font-medium transition-all"
+              style={{
+                background: modus === tab.id ? "var(--surface)" : "transparent",
+                color: modus === tab.id ? "var(--accent)" : "var(--text-muted)",
+                boxShadow: modus === tab.id ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+              }}
+            >{tab.label}</button>
+          ))}
         </div>
+
+        {/* Penger inn-modus */}
+        {modus === "inn" && (
+          <div className="space-y-3">
+            <div className="p-3 rounded-xl text-sm" style={{ background: "var(--green-light)", color: "var(--green)", border: "1px solid var(--green)" }}>
+              Registrer penger du har fått inn — Vipps fra venner, tilbakebetaling, betaling for tjenester osv.
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium block mb-1" style={{ color: "var(--text-muted)" }}>Beløp (kr) *</label>
+                <input type="number" value={beløp} onChange={e => setBeløp(e.target.value)} placeholder="0"
+                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inputStyle}
+                  onFocus={e => (e.target.style.borderColor = "var(--green)")}
+                  onBlur={e => (e.target.style.borderColor = "var(--border)")} />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1" style={{ color: "var(--text-muted)" }}>Dato</label>
+                <input type="date" value={dato} onChange={e => setDato(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inputStyle}
+                  onFocus={e => (e.target.style.borderColor = "var(--green)")}
+                  onBlur={e => (e.target.style.borderColor = "var(--border)")} />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium block mb-1" style={{ color: "var(--text-muted)" }}>Fra hvem / hva gjelder det?</label>
+              <input type="text" value={beskrivelse} onChange={e => setBeskrivelse(e.target.value)}
+                placeholder="f.eks. Tobias — middag, Tilbakebetaling lån"
+                className="w-full px-3 py-2.5 rounded-xl text-sm outline-none" style={inputStyle}
+                onFocus={e => (e.target.style.borderColor = "var(--green)")}
+                onBlur={e => (e.target.style.borderColor = "var(--border)")} />
+            </div>
+            {betaltAvValg.length > 1 && (
+              <div>
+                <label className="text-xs font-medium block mb-1" style={{ color: "var(--text-muted)" }}>Til hvem?</label>
+                <div className="flex gap-2 flex-wrap">
+                  {betaltAvValg.map(p => (
+                    <button key={p} onClick={() => setBetaltAv(p)}
+                      className="flex-1 py-2 rounded-xl text-sm font-medium transition-all"
+                      style={{
+                        background: betaltAv === p ? "var(--green)" : "var(--background)",
+                        color: betaltAv === p ? "white" : "var(--text-secondary)",
+                        border: `1px solid ${betaltAv === p ? "var(--green)" : "var(--border)"}`,
+                      }}>
+                      {p === "felles" ? "🏠 Felles" : p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Kvittering-modus: last opp */}
         {modus === "kvittering" && !scanResultat && !skanner && (
@@ -483,6 +546,15 @@ export default function RegistrerForbruk({
         </div>{/* slutt scrollbart innhold */}
 
         {/* Sticky lagre-knapp */}
+        {modus === "inn" && (
+          <div className="px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
+            <button onClick={lagreInn} disabled={!beløp || lagrer}
+              className="w-full py-3.5 rounded-xl font-semibold text-white text-base disabled:opacity-40"
+              style={{ background: "var(--green)" }}>
+              {lagrer ? "Lagrer..." : "Registrer penger inn →"}
+            </button>
+          </div>
+        )}
         {modus === "manuell" && (
           <div className="px-6 py-4 shrink-0" style={{ borderTop: "1px solid var(--border)" }}>
             <button
